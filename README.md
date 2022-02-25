@@ -1,2 +1,3 @@
 # dotfiles
-dot files
+
+Lin Rongbin's dot files

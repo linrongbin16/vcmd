@@ -1,0 +1,18 @@
+#! /bin/bash
+
+# better ls
+alias l="ls -lh"
+alias ll="ls -lah"
+
+# coredump
+ulimit -c unlimited
+
+# english
+export LANGUAGE='en_US.UTF-8'
+export LANG="en_US.UTF-8"
+
+# vcmd
+export PATH=~/.vcmd:$PATH
+
+# rust
+export RUST_BACKTRACE=1
