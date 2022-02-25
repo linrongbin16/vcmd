@@ -16,3 +16,6 @@ export PATH=~/.vcmd:$PATH
 
 # rust
 export RUST_BACKTRACE=1
+
+# color
+export CLICOLOR=1
