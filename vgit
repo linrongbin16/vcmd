@@ -132,6 +132,21 @@ def add_proxy(value, debug):
     util.append_file(GIT_PROXY_DB, f"{value}\n")
 
 
+def remove_proxy(value, debug):
+    if debug:
+        print(f"[vcmd] remove git proxy:{value}")
+    proxies = util.read_file_by_lines(GIT_PROXY_DB)
+    removed_proxies = []
+    for p in proxies:
+        if not p or len(p.strip()) == 0:
+            continue
+        if p.strip().startswith(value):
+            print(f"[vcmd] remove git proxy:{p.strip()}")
+            continue
+        removed_proxies.append(p.strip() + "\n")
+    util.write_file(GIT_PROXY_DB, removed_proxies)
+
+
 def current_using_proxy(debug):
     configs = util.read_file_by_lines(GIT_CONFIG)
     if debug:
@@ -166,7 +181,7 @@ def display_proxy(debug):
     print("[vcmd] stored git proxy:")
     n = 0
     if proxies:
-        for i, p in enumerate(proxies):
+        for p in proxies:
             if p.strip() == 0:
                 continue
             print(f"[vcmd] stored git proxy - {p.strip()}")
@@ -206,7 +221,7 @@ def switch_proxy(name, debug):
     print(f"[vcmd] git proxy:{name} not found")
 
 
-def purge_proxy():
+def clear_proxy():
     util.purge_file(GIT_PROXY_DB)
 
 
@@ -240,6 +255,11 @@ def vgit_proxy(proxy, args, debug):
             print("[vcmd] please provide ip proxy in `name=value` format")
             return
         add_proxy(args[0], debug)
+    elif proxy == "remove":
+        if len(args) != 1:
+            print("[vcmd] please provide ip proxy name")
+            return
+        remove_proxy(args[0], debug)
     elif proxy == "switch":
         if len(args) != 1:
             print("[vcmd] please provide ip proxy name")
@@ -247,8 +267,8 @@ def vgit_proxy(proxy, args, debug):
         switch_proxy(args[0], debug)
     elif proxy == "none":
         disable_proxy()
-    elif proxy == "purge":
-        purge_proxy()
+    elif proxy == "clear":
+        clear_proxy()
     elif proxy == "show":
         display_proxy(debug)
     else:
@@ -291,9 +311,9 @@ def vgit_proxy(proxy, args, debug):
 @click.option(
     "-p",
     "--proxy",
-    type=click.Choice(["add", "switch", "none", "purge", "show"]),
+    type=click.Choice(["add", "remove", "switch", "none", "clear", "show"]),
     help=
-    "proxy configuration, use `add` to add new ip proxy, use `switch` to switch between different ip proxies, use `none` to disable ip proxy, use `purge` to remove all configured ip proxies(and disable currently using ip proxy if exist), use `show` to display configured ip proxies and currently using ip proxy if exist",
+    "proxy configuration, use `add` to add new ip proxy, use `switch` to switch between different ip proxies, use `none` to disable ip proxy, use `clear` to remove all configured ip proxies(and disable currently using ip proxy if exist), use `show` to display configured ip proxies and currently using ip proxy if exist",
 )
 @click.option("--debug", is_flag=True, help="debug mode")
 @click.argument("args", nargs=-1)
