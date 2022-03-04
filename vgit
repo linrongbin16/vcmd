@@ -126,105 +126,6 @@ def vgit_reset(n):
         os.chdir(save_dir)
 
 
-def add_proxy(value, debug):
-    if debug:
-        print(f"[vcmd] add git proxy:{value}")
-    util.append_file(GIT_PROXY_DB, f"{value}\n")
-
-
-def remove_proxy(value, debug):
-    if debug:
-        print(f"[vcmd] remove git proxy:{value}")
-    proxies = util.read_file_by_lines(GIT_PROXY_DB)
-    removed_proxies = []
-    for p in proxies:
-        if not p or len(p.strip()) == 0:
-            continue
-        if p.strip().startswith(value):
-            print(f"[vcmd] remove git proxy:{p.strip()}")
-            continue
-        removed_proxies.append(p.strip() + "\n")
-    util.write_file(GIT_PROXY_DB, removed_proxies)
-
-
-def current_using_proxy(debug):
-    configs = util.read_file_by_lines(GIT_CONFIG)
-    if debug:
-        print(f"{GIT_CONFIG}:{configs}")
-    last_setting = None
-    current_proxies = []
-    if configs:
-        for i, line in enumerate(configs):
-            trim_line = line.strip()
-            if debug:
-                print(
-                    f"the {i}-th line:{trim_line}, last_setting:{last_setting}, startswith proxy:{trim_line.startswith('proxy')}"
-                )
-            if trim_line == 0:
-                continue
-            if trim_line.startswith("[") and trim_line.endswith("]"):
-                last_setting = trim_line
-            elif trim_line.startswith(
-                    "proxy") and last_setting.lower().startswith("[http"):
-                current_proxies.append(f"{last_setting}:{trim_line}")
-    if current_proxies:
-        for p in current_proxies:
-            print(f"[vcmd] current using git proxy - {p}")
-    else:
-        print("[vcmd] no current using git proxy")
-
-
-def display_proxy(debug):
-    proxies = util.read_file_by_lines(GIT_PROXY_DB)
-    if debug:
-        print(f"{GIT_CONFIG}:{proxies}")
-    print("[vcmd] stored git proxy:")
-    n = 0
-    if proxies:
-        for p in proxies:
-            if p.strip() == 0:
-                continue
-            print(f"[vcmd] stored git proxy - {p.strip()}")
-            n += 1
-    if n == 0:
-        print("[vcmd] no stored git proxies")
-    current_using_proxy(debug)
-
-
-def disable_proxy():
-    os.system("git config --global --unset https.proxy")
-    os.system("git config --global --unset http.proxy")
-
-
-def switch_proxy(name, debug):
-    os.system("git config --global --unset https.proxy")
-    os.system("git config --global --unset http.proxy")
-    proxies = util.read_file_by_lines(GIT_PROXY_DB)
-    if debug:
-        print(f"[vcmd] {GIT_PROXY_DB}:{proxies}")
-    if proxies is None:
-        print(
-            "[vcmd] git proxy not configured yet, please try 'vgit -p add <name> <proxy>' first"
-        )
-        return
-    for p in proxies:
-        ps = [x.strip() for x in p.split("=")]
-        if ps[0] == name.strip():
-            if debug:
-                print(f"[vcmd] switch to proxy:{ps}")
-            httpcmd = f"git config --global http.proxy {ps[1]}"
-            httpscmd = f"git config --global https.proxy {ps[1]}"
-            os.system(httpcmd)
-            os.system(httpscmd)
-            print(f"[vcmd] switch to proxy:{ps}")
-            return
-    print(f"[vcmd] git proxy:{name} not found")
-
-
-def clear_proxy():
-    util.purge_file(GIT_PROXY_DB)
-
-
 def vgit_branch(branch, args, debug):
     if branch in ("local", "remote", "all", "this"):
         branch_show(branch)
@@ -246,34 +147,6 @@ def vgit_branch(branch, args, debug):
     else:
         print(
             f"[vcmd] unknown option:{branch}, please try `vgit --help` for more information"
-        )
-
-
-def vgit_proxy(proxy, args, debug):
-    if proxy == "add":
-        if len(args) != 1:
-            print("[vcmd] please provide ip proxy in `name=value` format")
-            return
-        add_proxy(args[0], debug)
-    elif proxy == "remove":
-        if len(args) != 1:
-            print("[vcmd] please provide ip proxy name")
-            return
-        remove_proxy(args[0], debug)
-    elif proxy == "switch":
-        if len(args) != 1:
-            print("[vcmd] please provide ip proxy name")
-            return
-        switch_proxy(args[0], debug)
-    elif proxy == "none":
-        disable_proxy()
-    elif proxy == "clear":
-        clear_proxy()
-    elif proxy == "show":
-        display_proxy(debug)
-    else:
-        print(
-            f"[vcmd] unknown option:{proxy}, please try `vgit --help` for more information"
         )
 
 
@@ -308,13 +181,6 @@ def vgit_proxy(proxy, args, debug):
     type=int,
     required=False,
     help="revert N previous commits(use new commit instead of push force)")
-@click.option(
-    "-p",
-    "--proxy",
-    type=click.Choice(["add", "remove", "switch", "none", "clear", "show"]),
-    help=
-    "proxy configuration, use `add` to add new ip proxy, use `switch` to switch between different ip proxies, use `none` to disable ip proxy, use `clear` to remove all configured ip proxies(and disable currently using ip proxy if exist), use `show` to display configured ip proxies and currently using ip proxy if exist",
-)
 @click.option("--debug", is_flag=True, help="debug mode")
 @click.argument("args", nargs=-1)
 def vgit(branch, pull, push, force, discard, reset, revert, proxy, debug,
@@ -348,8 +214,6 @@ To https://github.com/linrongbin16/lin.vim
         print(f"args:{args}, type:{type(args)}")
     if branch:
         vgit_branch(branch, args, debug)
-    elif proxy:
-        vgit_proxy(proxy, args, debug)
     else:
         if pull:
             vgit_pull(force, debug)
