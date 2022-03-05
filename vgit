@@ -11,10 +11,6 @@ import click
 
 sys.path.append(".")
 
-SLASH = "\\" if util.is_windows() else "/"
-GIT_PROXY_DB = util.get_command_home() + SLASH + "git_proxy.db"
-GIT_CONFIG = os.path.expanduser("~") + SLASH + ".gitconfig"
-
 
 def branch_show(opt):
     util.check_git_repository()
@@ -183,10 +179,9 @@ def vgit_branch(branch, args, debug):
     help="revert N previous commits(use new commit instead of push force)")
 @click.option("--debug", is_flag=True, help="debug mode")
 @click.argument("args", nargs=-1)
-def vgit(branch, pull, push, force, discard, reset, revert, proxy, debug,
-         args):
+def vgit(branch, pull, push, force, discard, reset, revert, debug, args):
     """
-Dummy UI for git with global .gitconfig http(s) proxy management
+Dummy UI for git
 
 Example:
 
