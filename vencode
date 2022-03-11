@@ -62,7 +62,7 @@ Hello World => SGVsbG8gV29ybGQ=
 ```
     """
     if len(args) == 0:
-        print(f"[vcmd] args is missing")
+        print(f"[dotfiles] args is missing")
         return
     if encode:
         if encode == "base64":
@@ -79,7 +79,7 @@ Hello World => SGVsbG8gV29ybGQ=
             for a in args:
                 decode_url(a)
     else:
-        print(f"[vcmd] unknown option")
+        print(f"[dotfiles] unknown option")
 
 
 if __name__ == "__main__":

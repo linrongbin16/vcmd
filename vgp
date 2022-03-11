@@ -17,16 +17,16 @@ def vgp_config(config, args, debug):
     if config == "ignore":
         ignored_file_types = [f"{p}\n" for p in args]
         if debug:
-            print(f"[vcmd] ignored file types:{ignored_file_types}")
+            print(f"[dotfiles] ignored file types:{ignored_file_types}")
         util.append_file(IGNORE_CONFIG, ignored_file_types)
     elif config == "purge":
         util.purge_file(IGNORE_CONFIG)
     elif config == "show":
-        print(f"[vcmd] {IGNORE_CONFIG}:")
+        print(f"[dotfiles] {IGNORE_CONFIG}:")
         os.system(f"cat {IGNORE_CONFIG}")
     else:
         print(
-            f"[vcmd] unknown option:{config}, please try `vgp --help` for more information"
+            f"[dotfiles] unknown option:{config}, please try `vgp --help` for more information"
         )
 
 

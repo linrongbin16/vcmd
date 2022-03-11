@@ -11,8 +11,8 @@ ulimit -c unlimited
 export LANGUAGE='en_US.UTF-8'
 export LANG="en_US.UTF-8"
 
-# vcmd
-export PATH=~/.vcmd:$PATH
+# dotfiles home
+export PATH=~/.dotfiles:$PATH
 
 # rust
 export RUST_BACKTRACE=1

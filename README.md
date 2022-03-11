@@ -1,11 +1,11 @@
-# dotfiles
+# Lin Rongbin's dot files
 
 Lin Rongbin's dot files
 
 # Install
 
 ```bash
-$ git clone https://github.com/linrongbin16/dotfiles ~/.vcmd
-$ cp ~/.vcmd/.linshrc ~/.linshrc
-$ echo "[ -f ~/.linshrc ] && source ~/.linshrc" >> ~/.bashrc
+$ git clone https://github.com/linrongbin16/dotfiles ~/.dotfiles
+$ cp ~/.dotfiles/.mydotfiles ~/.mydotfiles
+$ echo "[ -f ~/.mydotfiles ] && source ~/.mydotfiles" >> ~/.bashrc
 ```

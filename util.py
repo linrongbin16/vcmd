@@ -62,7 +62,7 @@ def purge_file(name):
 
 def get_command_home():
     SLASH = "\\" if is_windows() else "/"
-    return f"{os.path.expanduser('~')}{SLASH}.vcmd"
+    return f"{os.path.expanduser('~')}{SLASH}.dotfiles"
 
 
 def backup_file(target):
@@ -124,7 +124,7 @@ def run(*cmd):
 def check_user_confirm(msg):
     yes = input(msg)
     if yes.lower().startswith("n"):
-        print("[vcmd] user not confirm, exit...")
+        print("[dotfiles] user not confirm, exit...")
         exit(3)
 
 
@@ -135,7 +135,7 @@ def get_git_root():
 
 def check_git_repository():
     if get_git_root() is None:
-        print("[vcmd] error: not a git repository, exit...")
+        print("[dotfiles] error: not a git repository, exit...")
         exit(3)
 
 
@@ -166,14 +166,14 @@ def get_git_remote_repository():
         return None
     repos_str = ", ".join([f"'{repos[i]}'[{i}]" for i in range(len(repos))])
     user_input = input(
-        f"[vcmd] choose remote repository {repos_str} (by default 0): ")
+        f"[dotfiles] choose remote repository {repos_str} (by default 0): ")
     if str_empty(user_input):
         repos_str = list(repos)[0]
     else:
         try:
             repos_str = repos[int(user_input)]
         except Exception:
-            print(f"[vcmd] error input:{user_input}, exit...")
+            print(f"[dotfiles] error input:{user_input}, exit...")
             exit(3)
     return repos_str
 
@@ -182,7 +182,7 @@ def get_git_remote_branch():
     branches, _ = run("git", "status")
     branches = [x.strip() for x in branches]
     branch = branches[0].split(" ")[2].strip()
-    user_input = input(f"[vcmd] choose branch (by default {branch}): ")
+    user_input = input(f"[dotfiles] choose branch (by default {branch}): ")
     return branch if str_empty(user_input) else user_input
 
 

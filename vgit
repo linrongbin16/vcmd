@@ -5,7 +5,6 @@
 import util
 import sys
 import os
-import getopt
 import datetime
 import click
 
@@ -46,11 +45,11 @@ def vgit_pull(force, debug):
     util.check_git_repository()
     remote_count = util.get_git_remote_repository_count()
     if remote_count <= 0:
-        print("[vcmd] remote git repository not exist")
+        print("[dotfiles] remote git repository not exist")
         return
     repo = util.get_git_remote_repository()
     branch = util.get_git_remote_branch()
-    print(f"[vcmd] git pull from {repo}/{branch}")
+    print(f"[dotfiles] git pull from {repo}/{branch}")
     os.system("git fetch")
     os.system(f"git pull {'--force' if force else ''} {repo} {branch}")
 
@@ -59,17 +58,17 @@ def vgit_push(force, debug):
     util.check_git_repository()
     remote_count = util.get_git_remote_repository_count()
     if remote_count <= 0:
-        print("[vcmd] remote git repository not exist")
+        print("[dotfiles] remote git repository not exist")
         return
     repo = util.get_git_remote_repository()
     branch = util.get_git_remote_branch()
-    comment = input("[vcmd] enter comment: ")
+    comment = input("[dotfiles] enter comment: ")
     if util.str_empty(comment):
-        comment = f"[vcmd] git push at {(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'))}"
+        comment = f"[dotfiles] git push at {(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'))}"
     else:
-        comment = f"[vcmd] git push with {comment.strip()}"
+        comment = f"[dotfiles] git push with {comment.strip()}"
     util.check_user_confirm(
-        f"[vcmd] git push to {repo}/{branch} with '{comment}', yes? ")
+        f"[dotfiles] git push to {repo}/{branch} with '{comment}', yes? ")
     os.chdir(util.get_git_root())
     os.system("git add -A .")
     os.system(f'git commit -m "{comment}"')
@@ -85,10 +84,10 @@ def vgit_discard(debug):
     file_list = modifies + untracts
     for i in file_list:
         if i in modifies:
-            print("[vcmd] discard: %s" % (i + " "))
+            print("[dotfiles] discard: %s" % (i + " "))
             os.system("git checkout %s" % (i + " "))
         elif i in untracts:
-            print("[vcmd] remove: %s" % (i + " "))
+            print("[dotfiles] remove: %s" % (i + " "))
             os.system("rm %s" % (i + " "))
     if os.path.exists(save_dir):
         os.chdir(save_dir)
@@ -99,7 +98,7 @@ def vgit_revert(n):
     branch = util.get_git_current_branch()
     commit = util.get_git_last_commit(n - 1)
     util.check_user_confirm(
-        "[vcmd] git revert to last '%d' commits '%s' on '%s', yes? " %
+        "[dotfiles] git revert to last '%d' commits '%s' on '%s', yes? " %
         (n, commit, branch))
     save_dir = os.getcwd()
     os.chdir(util.get_git_root())
@@ -113,7 +112,7 @@ def vgit_reset(n):
     branch = util.get_git_current_branch()
     commit = util.get_git_last_commit(n - 1)
     util.check_user_confirm(
-        "[vcmd] git revert to last '%d' commits '%s' on '%s', yes? " %
+        "[dotfiles] git revert to last '%d' commits '%s' on '%s', yes? " %
         (n, commit, branch))
     save_dir = os.getcwd()
     os.chdir(util.get_git_root())
@@ -127,22 +126,22 @@ def vgit_branch(branch, args, debug):
         branch_show(branch)
     elif branch == "create":
         if len(args) != 1:
-            print("[vcmd] please provide branch name")
+            print("[dotfiles] please provide branch name")
             return
         branch_create(args[0])
     elif branch == "switch":
         if len(args) != 1:
-            print("[vcmd] please provide branch name")
+            print("[dotfiles] please provide branch name")
             return
         branch_switch(args[0])
     elif branch == "delete":
         if len(args) != 1:
-            print("[vcmd] please provide branch name")
+            print("[dotfiles] please provide branch name")
             return
         branch_delete(args[0])
     else:
         print(
-            f"[vcmd] unknown option:{branch}, please try `vgit --help` for more information"
+            f"[dotfiles] unknown option:{branch}, please try `vgit --help` for more information"
         )
 
 
@@ -188,11 +187,11 @@ Example:
 \b
 ```
 $ vgit -ps
-[vcmd] choose remote repository 'origin'[0] (by default 0):
-[vcmd] choose branch (by default master):
-[vcmd] enter comment: test vgit -ps
-[vcmd] git push to origin/master with '[vcmd] git push at test vgit -ps', yes? Y
-[master 0995109] [vcmd] git push at test vgit -ps
+[dotfiles] choose remote repository 'origin'[0] (by default 0):
+[dotfiles] choose branch (by default master):
+[dotfiles] enter comment: test vgit -ps
+[dotfiles] git push to origin/master with '[dotfiles] git push at test vgit -ps', yes? Y
+[master 0995109] [dotfiles] git push at test vgit -ps
  2 files changed, 80 insertions(+), 42 deletions(-)
 Enumerating objects: 9, done.
 Counting objects: 100% (9/9), done.
@@ -218,17 +217,17 @@ To https://github.com/linrongbin16/lin.vim
             vgit_discard(debug)
         elif reset:
             if reset < 1:
-                print(f"[vcmd] invalid N:{reset}")
+                print(f"[dotfiles] invalid N:{reset}")
                 return
             vgit_reset(reset)
         elif revert:
             if revert < 1:
-                print(f"[vcmd] invalid N:{revert}")
+                print(f"[dotfiles] invalid N:{revert}")
                 return
             vgit_revert(revert)
         else:
             print(
-                "[vcmd] unknown option, please try `vgit --help` for more information"
+                "[dotfiles] unknown option, please try `vgit --help` for more information"
             )
 
 
