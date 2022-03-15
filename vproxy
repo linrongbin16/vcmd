@@ -26,7 +26,7 @@ def add_proxy(args, debug):
     print(f"[dotfiles] add ip proxy: {args[0]}")
 
 
-def remove_proxy(name, debug):
+def erase_proxy(name, debug):
     if debug:
         print(f"[dotfiles] remove ip proxy:{name}")
     proxies = util.read_file_by_lines(PROXY_DB)
@@ -40,7 +40,22 @@ def remove_proxy(name, debug):
     util.write_file(PROXY_DB, saved_proxies)
 
 
-def current_git_proxy(debug):
+def listing_proxy(debug):
+    proxies = util.read_file_by_lines(PROXY_DB)
+    proxies = [p.strip() for p in proxies if p and len(p.strip()) > 0]
+    if debug:
+        print(f"{GIT_CONFIG}:{proxies}")
+    n = 0
+    if proxies and len(proxies) > 0:
+        print("[dotfiles] stored ip proxy:")
+        for i, p in enumerate(proxies):
+            print(f"[dotfiles]   {i} - {p.strip()}")
+            n += 1
+    else:
+        print("[dotfiles] stored ip proxy - empty")
+
+
+def show_git_proxy(debug):
     configs = util.read_file_by_lines(GIT_CONFIG)
     if debug:
         print(f"{GIT_CONFIG}:{configs}")
@@ -64,30 +79,32 @@ def current_git_proxy(debug):
                     title, str) and title.lower().startswith("[http"):
                 proxies.append(f"{title}={current.split('=')[-1].strip()}")
     if len(proxies) > 0:
-        print(f"[dotfiles] current git proxy:")
+        print(f"[dotfiles] git proxy:")
         for i, p in enumerate(proxies):
             print(f"[dotfiles]   {i} - {p}")
     else:
-        print("[dotfiles] current git proxy - empty")
+        print("[dotfiles] git proxy - empty")
+
+
+def show_environment_proxy(debug):
+    if debug:
+        print(f"OS platform is windows:{util.is_windows()}")
+
+    print(f"[dotfiles] environment proxy:")
+    if util.is_windows():
+        print(f"[dotfiles]   0 - %HTTP_PROXY%: {os.environ['HTTP_PROXY']}")
+        print(f"[dotfiles]   1 - %HTTPS_PROXY%: {os.environ['HTTPS_PROXY']}")
+    else:
+        print(f"[dotfiles]   0 - $http_proxy: {os.environ['http_proxy']}")
+        print(f"[dotfiles]   1 - $https_proxy: {os.environ['https_proxy']}")
 
 
 def show_proxy(debug):
-    proxies = util.read_file_by_lines(PROXY_DB)
-    proxies = [p.strip() for p in proxies if p and len(p.strip()) > 0]
-    if debug:
-        print(f"{GIT_CONFIG}:{proxies}")
-    n = 0
-    if proxies and len(proxies) > 0:
-        print("[dotfiles] stored ip proxy:")
-        for i, p in enumerate(proxies):
-            print(f"[dotfiles]   {i} - {p.strip()}")
-            n += 1
-    else:
-        print("[dotfiles] stored ip proxy - empty")
-    current_git_proxy(debug)
+    show_git_proxy(debug)
+    show_environment_proxy(debug)
 
 
-def unset_git_proxy():
+def reset_git_proxy():
     os.system("git config --global --unset https.proxy")
     os.system("git config --global --unset http.proxy")
 
@@ -156,38 +173,40 @@ def print_cmd_proxy(name, debug):
               is_flag=True,
               help="add proxy in `name=protocol://ip:port` format")
 @click.option("-l", "--list", "listing", is_flag=True, help="list all proxies")
+@click.option("--show", is_flag=True, help="show current environment proxies")
 @click.option("--clear", is_flag=True, help="clear all proxies")
-@click.option("-r", "--remove", help="remove proxy by name")
-@click.option("-g", "--git", 'set_git', help="set git proxy")
-@click.option("-ug",
-              "--unset-git",
-              'unset_git',
+@click.option("-e", "--erase", help="erase proxy by name")
+@click.option("-s", "--set-git", 'set_git', help="set git proxy")
+@click.option("-r",
+              "--reset-git",
+              'reset_git',
               is_flag=True,
-              help="unset git proxy")
-@click.option("-s", "--shell", help="print linux shell proxy environment")
-@click.option("-p",
-              "--powershell",
+              help="disable git proxy")
+@click.option("--shell", help="print linux shell proxy environment")
+@click.option("--powershell",
               help="print windows powershell proxy environment")
-@click.option("-c", "--cmd", help="print windows cmd proxy environment")
+@click.option("--cmd", help="print windows cmd proxy environment")
 @click.option("--debug", is_flag=True, help="debug mode")
 @click.argument("args", nargs=-1)
-def vproxy(add, listing, remove, clear, set_git, unset_git, shell, powershell,
-           cmd, debug, args):
+def vproxy(add, listing, show, erase, clear, set_git, reset_git, shell,
+           powershell, cmd, debug, args):
     """ Proxy management """
     if debug:
         print(f"args:{args}, type:{type(args)}")
     if add:
         add_proxy(args, debug)
     elif listing:
+        listing_proxy(debug)
+    elif show:
         show_proxy(debug)
     elif clear:
         clear_proxy()
-    elif remove:
-        remove_proxy(remove, debug)
+    elif erase:
+        erase_proxy(erase, debug)
     elif set_git:
         set_git_proxy(set_git, debug)
-    elif unset_git:
-        unset_git_proxy()
+    elif reset_git:
+        reset_git_proxy()
     elif shell:
         print_shell_proxy(shell, debug)
     elif powershell:
