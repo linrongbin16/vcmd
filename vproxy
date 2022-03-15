@@ -154,8 +154,8 @@ def print_powershell_proxy(name, debug):
     if proxy is None or len(proxy) == 0:
         print(f"[dotfiles] ip proxy:{name} not found, exit...")
         return
-    print(f"[dotfiles] $env:HTTP_PROXY={proxy[1]}")
-    print(f"[dotfiles] $env:HTTPS_PROXY={proxy[1]}")
+    print(f"[dotfiles] $env:HTTP_PROXY=\"{proxy[1]}\"")
+    print(f"[dotfiles] $env:HTTPS_PROXY=\"{proxy[1]}\"")
 
 
 def print_cmd_proxy(name, debug):
@@ -163,8 +163,8 @@ def print_cmd_proxy(name, debug):
     if proxy is None or len(proxy) == 0:
         print(f"[dotfiles] ip proxy:{name} not found, exit...")
         return
-    print(f"[dotfiles] set HTTP_PROXY={proxy[1]}")
-    print(f"[dotfiles] set HTTPS_PROXY={proxy[1]}")
+    print(f"[dotfiles] set HTTP_PROXY=\"{proxy[1]}\"")
+    print(f"[dotfiles] set HTTPS_PROXY=\"{proxy[1]}\"")
 
 
 @click.command()
