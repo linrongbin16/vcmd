@@ -91,12 +91,18 @@ def show_environment_proxy(debug):
         print(f"OS platform is windows:{util.is_windows()}")
 
     print(f"[dotfiles] environment proxy:")
+    HTTP_PROXY_KEY = 'HTTP_PROXY' if util.is_windows() else 'http_proxy'
+    HTTPS_PROXY_KEY = 'HTTP_PROXY' if util.is_windows() else 'http_proxy'
+    http_proxy_value = os.environ[
+        HTTP_PROXY_KEY] if HTTP_PROXY_KEY in os.environ else None
+    https_proxy_value = os.environ[
+        HTTPS_PROXY_KEY] if HTTPS_PROXY_KEY in os.environ else None
     if util.is_windows():
-        print(f"[dotfiles]   0 - %HTTP_PROXY%: {os.environ['HTTP_PROXY']}")
-        print(f"[dotfiles]   1 - %HTTPS_PROXY%: {os.environ['HTTPS_PROXY']}")
+        print(f"[dotfiles]   0 - %{HTTP_PROXY_KEY}%: {http_proxy_value}")
+        print(f"[dotfiles]   1 - %{HTTPS_PROXY_KEY}%: {https_proxy_value}")
     else:
-        print(f"[dotfiles]   0 - $http_proxy: {os.environ['http_proxy']}")
-        print(f"[dotfiles]   1 - $https_proxy: {os.environ['https_proxy']}")
+        print(f"[dotfiles]   0 - ${HTTP_PROXY_KEY}: {http_proxy_value}")
+        print(f"[dotfiles]   1 - ${HTTPS_PROXY_KEY}: {https_proxy_value}")
 
 
 def show_proxy(debug):
