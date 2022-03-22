@@ -4,52 +4,13 @@
 
 import sys
 import os
-import getopt
-import ipaddress
+import click
 
 sys.path.append(".")
 import util
 
 
-def _help():
-    msg = """usage: vpack [option] filename
-
-  Compression and extraction.
-
-option:
-  -c/--compress [algorithm]         pack directory/file with algorithm, by default
-                                    generate .tar.gz package
-  -e/--extract                      unpack packaged file with detected algorithm
-
-  -h/--help                         show help message
-
-algorithm:
-  targz                             .tar.gz file
-  tgz                               .tar.gz file
-  tarbz2                            .tar.bz2 file
-  tar                               .tar file
-  zip                               .zip file
-  7z                                .7z file
-
-example:
-  $ vpack -e Hack-v3.003-ttf.zip
-  Archive:  Hack-v3.003-ttf.zip
-    inflating: ttf/Hack-Bold.ttf
-    inflating: ttf/Hack-BoldItalic.ttf
-    inflating: ttf/Hack-Italic.ttf
-    inflating: ttf/Hack-Regular.ttf
-
-  $ vpack -c package
-  a package
-  a package/test.log
-  a package/test3.log
-  a package/test2.log
-"""
-    print(msg)
-    exit(0)
-
-
-def _compress(filename, option):
+def compress_target(filename, option):
     if option == "targz" or option == "tgz":
         target = "%s.tar.gz" % filename
         util.backup_file(target)
@@ -67,11 +28,11 @@ def _compress(filename, option):
         util.backup_file(target)
         os.system('zip -r "%s" "%s"' % (target, filename))
     else:
-        print("error: compress option %s not support" % (option))
-    exit(0)
+        print("[dotfiles] compress filetype:%s is not support, exit..." %
+              (option))
 
 
-def _extract(filename):
+def extract_target(filename):
     if filename.endswith(".tar.gz") or filename.endswith(".tgz"):
         os.system('tar zxvf "%s"' % (filename))
     elif filename.endswith(".tar.bz2"):
@@ -85,39 +46,58 @@ def _extract(filename):
     elif filename.endswith(".jar"):
         os.system('jar xf "%s"' % (filename))
     else:
-        print("error: file %s extraction not support" % (filename))
-    exit(0)
+        print("[dotfiles] file:%s extract is not support, exit..." %
+              (filename))
+
+
+@click.command()
+@click.option(
+    "-c",
+    "--compress",
+    default="targz",
+    type=click.Choice(["targz", "tgz", "tarbz2", "tar", "zip", "7z"]),
+    help=
+    "compress file/directory with specified compress algorithm, by default: targz"
+)
+@click.option("-e",
+              "--extract",
+              is_flag=True,
+              help="extract compressed file with detected filetype")
+@click.argument("args", nargs=-1)
+def vpack(compress: str, extract: bool, args):
+    """
+Compression and extraction.
+
+Example:
+
+\b
+$ vpack -e date-3.0.1.tar.gz
+x date-3.0.1/
+x date-3.0.1/.gitignore
+x date-3.0.1/.travis.yml
+x date-3.0.1/CMakeLists.txt
+x date-3.0.1/LICENSE.txt
+x date-3.0.1/README.md
+x date-3.0.1/ci/
+x date-3.0.1/ci/install_cmake.sh
+x date-3.0.1/cmake/
+x date-3.0.1/cmake/dateConfig.cmake
+x date-3.0.1/compile_fail.sh
+x date-3.0.1/include/
+x date-3.0.1/include/date/
+x date-3.0.1/include/date/chrono_io.h
+x date-3.0.1/include/date/date.h
+...
+"""
+    if extract:
+        extract_target(args[0])
+    elif compress:
+        compress_target(args[0], compress)
+    else:
+        print(
+            "[dotfiles] unknown option, please try `vpack --help` for more information"
+        )
 
 
 if __name__ == "__main__":
-    try:
-        opts, args = getopt.getopt(
-            sys.argv[1:],
-            "c:eh",
-            [
-                "compress=",
-                "extract=",
-                "help",
-            ],
-        )
-        for opt in opts:
-            if opt[0] in ("-h", "--help"):
-                _help()
-        for opt in opts:
-            if opt[0] in ("-c", "--compress"):
-                algorithm = "targz"
-                filename = None
-                if len(args) > 0:
-                    algorithm = opt[1]
-                    filename = args[0]
-                else:
-                    filename = opt[1]
-                _compress(filename, algorithm)
-            elif opt[0] in ("-e", "--extract"):
-                _extract(args[0])
-        _help()
-    except getopt.GetoptError as e:
-        print(e)
-        _help()
-    except Exception as e:
-        print(e)
+    vpack()
