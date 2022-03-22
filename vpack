@@ -54,7 +54,6 @@ def extract_target(filename):
 @click.option(
     "-c",
     "--compress",
-    default="targz",
     type=click.Choice(["targz", "tgz", "tarbz2", "tar", "zip", "7z"]),
     help=
     "compress file/directory with specified compress algorithm, by default: targz"
@@ -89,10 +88,10 @@ x date-3.0.1/include/date/chrono_io.h
 x date-3.0.1/include/date/date.h
 ...
 """
-    if extract:
-        extract_target(args[0])
-    elif compress:
+    if compress:
         compress_target(args[0], compress)
+    elif extract:
+        extract_target(args[0])
     else:
         print(
             "[dotfiles] unknown option, please try `vpack --help` for more information"
