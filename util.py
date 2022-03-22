@@ -70,6 +70,7 @@ def backup_file(target):
         return
     bakname = f"{target}.{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}"
     os.rename(target, bakname)
+    print(f"[dotfiles] backup file {target} to {bakname}")
 
 
 def list_files(directory, include_hidden=False, depth=99):
