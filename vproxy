@@ -92,7 +92,7 @@ def show_environment_proxy(debug):
 
     print(f"[dotfiles] environment proxy:")
     HTTP_PROXY_KEY = 'HTTP_PROXY' if util.is_windows() else 'http_proxy'
-    HTTPS_PROXY_KEY = 'HTTP_PROXY' if util.is_windows() else 'http_proxy'
+    HTTPS_PROXY_KEY = 'HTTPS_PROXY' if util.is_windows() else 'https_proxy'
     http_proxy_value = os.environ[
         HTTP_PROXY_KEY] if HTTP_PROXY_KEY in os.environ else None
     https_proxy_value = os.environ[
