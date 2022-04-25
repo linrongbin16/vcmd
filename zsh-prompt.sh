@@ -26,6 +26,5 @@ precmd_functions+=( my_precmd_info )
 
 setopt prompt_subst
 
-export PROMPT='%F{yellow}${CONDA_ENV}%f%F{blue}%#%f %F{cyan}%n%f@%F{magenta}%M%f %F{blue}%~%f %F{magenta}${GIT_BRANCH_ENV}%f(%D{%y/%m/%d %a %H:%M}) [%(?.%F{green}√.%F{red}?%?)%f]
+export PROMPT='%F{#FF8000}${CONDA_ENV}%f%F{blue}%#%f %F{cyan}%n%f@%F{#9933FF}%M%f %F{blue}%~%f %F{magenta}${GIT_BRANCH_ENV}%f(%D{%y/%m/%d %a %H:%M}) [%(?.%F{green}√.%F{red}?%?)%f]
 %F{blue}>%f '
-
