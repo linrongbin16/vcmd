@@ -3,11 +3,12 @@ my_precmd_detect_conda() {
     if [[ -n $CONDA_PREFIX ]]; then
         if [[ $(basename $CONDA_PREFIX) == "miniconda3" ]]; then
             # Without this, it would display conda version
-            MY_PROMPT_CONDA_ENV="( base) "
+            MY_PROMPT_CONDA_ENV="base"
         else
             # For all environments that aren't (base)
-            MY_PROMPT_CONDA_ENV="( $(basename $CONDA_PREFIX)) "
+            MY_PROMPT_CONDA_ENV="$(basename $CONDA_PREFIX)"
         fi
+        MY_PROMPT_CONDA_ENV="( ${MY_PROMPT_CONDA_ENV}) "
     else
         # When no conda environment is active, don't show anything
         MY_PROMPT_CONDA_ENV=""
@@ -57,13 +58,7 @@ my_precmd_detect_os() {
                 MY_PROMPT_OS_ENV=" "
             fi
             ;;
-        FreeBSD)
-            MY_PROMPT_OS_ENV=" "
-            ;;
-        NetBSD)
-            MY_PROMPT_OS_ENV=" "
-            ;;
-        OpenBSD)
+        *BSD)
             MY_PROMPT_OS_ENV=" "
             ;;
         Darwin)
@@ -73,7 +68,7 @@ my_precmd_detect_os() {
             MY_PROMPT_OS_ENV=" "
             ;;
         *)
-            MY_PROMPT_OS_ENV=""
+            MY_PROMPT_OS_ENV=" "
             ;;
     esac
 }
