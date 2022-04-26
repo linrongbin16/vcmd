@@ -14,9 +14,17 @@ my_precmd_detect_conda() {
     fi
 }
 
-my_precmd_detect_git_branch() {
+my_precmd_detect_git() {
     if git status >/dev/null 2>&1; then
-        MY_PROMPT_GIT_BRANCH_ENV="( $((git symbolic-ref HEAD 2>/dev/null || echo "(unnamed branch)")|cut -d/ -f3-)) "
+        MY_PROMPT_GIT_BRANCH_ENV="$(git symbolic-ref HEAD 2>/dev/null|cut -d/ -f3-)"
+        if [ ! -z "$(git ls-files -d)" ]; then
+            MY_PROMPT_GIT_BRANCH_ENV="${MY_PROMPT_GIT_BRANCH_ENV}*"
+        elif [ ! -z "$(git ls-files -m)" ]; then
+            MY_PROMPT_GIT_BRANCH_ENV="${MY_PROMPT_GIT_BRANCH_ENV}*"
+        elif [ ! -z "$(git ls-files . --exclude-standard --others)" ]; then
+            MY_PROMPT_GIT_BRANCH_ENV="${MY_PROMPT_GIT_BRANCH_ENV}*"
+        fi
+        MY_PROMPT_GIT_BRANCH_ENV="( ${MY_PROMPT_GIT_BRANCH_ENV}) "
     else
         MY_PROMPT_GIT_BRANCH_ENV=""
     fi
@@ -72,10 +80,10 @@ my_precmd_detect_os() {
 
 # Run the previously defined function before each prompt
 precmd_functions+=( my_precmd_detect_conda )
-precmd_functions+=( my_precmd_detect_git_branch )
+precmd_functions+=( my_precmd_detect_git)
 precmd_functions+=( my_precmd_detect_os )
 
 setopt prompt_subst
 
-export PROMPT='%F{#FF8000}${MY_PROMPT_CONDA_ENV}%f%F{blue}%#%f %F{cyan}%n%f@%F{#9933FF}%M%f %F{blue}${MY_PROMPT_OS_ENV}%~%f %F{magenta}${MY_PROMPT_GIT_BRANCH_ENV}%f%D{%H:%M} [%(?.%F{green}√.%F{red}?%?)%f]
-%F{blue}>%f '
+export PROMPT='%F{#FF8000}${MY_PROMPT_CONDA_ENV}%f%F{cyan}%n%f@%F{#9933FF}%M%f %F{blue}${MY_PROMPT_OS_ENV}%~%f %F{magenta}${MY_PROMPT_GIT_BRANCH_ENV}%f%D{%H:%M} [%(?.%F{green}√.%F{red}?%?)%f]
+%F{blue}%(!.#.$)%f '
