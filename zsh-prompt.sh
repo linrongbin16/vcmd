@@ -1,30 +1,81 @@
 # zsh theme
-
-# Determines prompt modifier if and when a conda environment is active
-my_precmd_info() {
+my_precmd_detect_conda() {
     if [[ -n $CONDA_PREFIX ]]; then
         if [[ $(basename $CONDA_PREFIX) == "miniconda3" ]]; then
             # Without this, it would display conda version
-            CONDA_ENV="(base) "
+            MY_PROMPT_CONDA_ENV="( base) "
         else
             # For all environments that aren't (base)
-            CONDA_ENV="($(basename $CONDA_PREFIX)) "
+            MY_PROMPT_CONDA_ENV="( $(basename $CONDA_PREFIX)) "
         fi
     else
         # When no conda environment is active, don't show anything
-        CONDA_ENV=""
-    fi
-    if git status >/dev/null 2>&1; then
-        GIT_BRANCH_ENV="(git:$((git symbolic-ref HEAD 2>/dev/null || echo "(unnamed branch)")|cut -d/ -f3-)) "
-    else
-        GIT_BRANCH_ENV=""
+        MY_PROMPT_CONDA_ENV=""
     fi
 }
 
+my_precmd_detect_git_branch() {
+    if git status >/dev/null 2>&1; then
+        MY_PROMPT_GIT_BRANCH_ENV="( $((git symbolic-ref HEAD 2>/dev/null || echo "(unnamed branch)")|cut -d/ -f3-)) "
+    else
+        MY_PROMPT_GIT_BRANCH_ENV=""
+    fi
+}
+
+my_precmd_detect_os() {
+    local MY_PROMPT_OS_NAME="$(uname -s)"
+    MY_PROMPT_OS_ENV=""
+    case "$MY_PROMPT_OS_NAME" in
+        Linux)
+            if [ -f "/etc/arch-release" ] || [ -f "/etc/artix-release" ]; then
+                    MY_PROMPT_OS_ENV=" "
+            elif [ -f "/etc/fedora-release" ]; then
+                MY_PROMPT_OS_ENV=" "
+            elif [ -f "/etc/redhat-release" ]; then
+                MY_PROMPT_OS_ENV=" "
+            elif [ -f "/etc/gentoo-release" ]; then
+                MY_PROMPT_OS_ENV=" "
+            elif [ -f "/etc/os-release" ]; then
+                if cat /etc/os-release | grep Ubuntu >/dev/null 2>&1; then
+                    MY_PROMPT_OS_ENV=" "
+                elif cat /etc/os-release | grep Debian >/dev/null 2>&1; then 
+                    MY_PROMPT_OS_ENV=" "
+                elif cat /etc/os-release | grep CentOS >/dev/null 2>&1; then 
+                    MY_PROMPT_OS_ENV=" "
+                else
+                    MY_PROMPT_OS_ENV=" "
+                fi
+            else
+                MY_PROMPT_OS_ENV=" "
+            fi
+            ;;
+        FreeBSD)
+            MY_PROMPT_OS_ENV=" "
+            ;;
+        NetBSD)
+            MY_PROMPT_OS_ENV=" "
+            ;;
+        OpenBSD)
+            MY_PROMPT_OS_ENV=" "
+            ;;
+        Darwin)
+            MY_PROMPT_OS_ENV=" "
+            ;;
+        WindowsNT)
+            MY_PROMPT_OS_ENV=" "
+            ;;
+        *)
+            MY_PROMPT_OS_ENV=""
+            ;;
+    esac
+}
+
 # Run the previously defined function before each prompt
-precmd_functions+=( my_precmd_info )
+precmd_functions+=( my_precmd_detect_conda )
+precmd_functions+=( my_precmd_detect_git_branch )
+precmd_functions+=( my_precmd_detect_os )
 
 setopt prompt_subst
 
-export PROMPT='%F{#FF8000}${CONDA_ENV}%f%F{blue}%#%f %F{cyan}%n%f@%F{#9933FF}%M%f %F{blue}%~%f %F{magenta}${GIT_BRANCH_ENV}%f(%D{%y/%m/%d %a %H:%M}) [%(?.%F{green}√.%F{red}?%?)%f]
+export PROMPT='%F{#FF8000}${MY_PROMPT_CONDA_ENV}%f%F{blue}%#%f %F{cyan}%n%f@%F{#9933FF}%M%f %F{blue}${MY_PROMPT_OS_ENV}%~%f %F{magenta}${MY_PROMPT_GIT_BRANCH_ENV}%f%D{%H:%M} [%(?.%F{green}√.%F{red}?%?)%f]
 %F{blue}>%f '
