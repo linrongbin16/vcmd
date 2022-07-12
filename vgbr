@@ -2,10 +2,7 @@
 # -*- coding:utf-8 -*-
 # Copyright 2018-  <linrongbin16@gmail.com>
 
-import util
 import sys
-import os
-import datetime
 import click
 
 sys.path.append(".")
@@ -26,17 +23,17 @@ def list_remote_branch(debug):
         cmsg.echo(o.strip())
 
 
-def create_branch(name):
+def create_branch(name, debug):
     cgt.check_repo()
     csys.cmd(f"git checkout -b {name}")
 
 
-def switch_branch(name):
+def switch_branch(name, debug):
     cgt.check_repo()
     csys.cmd(f"git checkout {name}")
 
 
-def delete_branch(name):
+def delete_branch(name, debug):
     cgt.check_repo()
     csys.cmd(f"git branch -d {name}")
 
@@ -83,11 +80,11 @@ $ vgbr -r
     elif list_remote:
         list_remote_branch(debug)
     elif create:
-        create_branch(create)
+        create_branch(create, debug)
     elif switch:
-        switch_branch(switch)
+        switch_branch(switch, debug)
     elif delete:
-        delete_branch(delete)
+        delete_branch(delete, debug)
     else:
         cmsg.unknown_option()
 
