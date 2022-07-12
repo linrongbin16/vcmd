@@ -51,6 +51,17 @@ def parse(args, tzname, debug):
         cmsg.from_to(f"now({value})", "{:.6f}".format(value.timestamp()))
 
 
+def list_timezone(args, debug):
+    if len(args) > 0:
+        for tz in pytz.all_timezones:
+            for a in args:
+                if a.lower() in tz.lower():
+                    cmsg.echo(tz)
+    else:
+        for tz in pytz.all_timezones:
+            cmsg.echo(tz)
+
+
 @click.command()
 @click.option(
     "--tz",
@@ -58,9 +69,16 @@ def parse(args, tzname, debug):
     help=
     "Treat input datetime in specified timezone, by default it's null, using timezone (the `+HH:MM` part on the right side) specified in input. If not null, this option will overwrite input timezone info."
 )
+@click.option(
+    "-l",
+    "--tz-list",
+    is_flag=True,
+    help=
+    "List timezones, by default list all timezones. Please specify args to filter output."
+)
 @click.option("--debug", is_flag=True, help="debug mode")
 @click.argument("args", nargs=-1)
-def vts(tz, args, debug):
+def vts(tz, tz_list, args, debug):
     """
 Parse ISO8601 datetime to UTC unix epoch timestamp, by default print now in timestamp.
 
@@ -93,9 +111,15 @@ $ vts 2022-07-12T08:39:12.124123+00:00
 [vcmd] 2022-07-12T08:39:12.124123+00:00 => 1657615152.124123
 $ vts 2022-07-12T16:39:12.124123+08:00 --tz UTC
 [vcmd] 2022-07-12T16:39:12.124123+08:00 => 1657643952.124123
+$ vts -l UTC
+[vcmd] Etc/UTC
+[vcmd] UTC
 ```
     """
-    parse(args, tz, debug)
+    if tz_list:
+        list_timezone(args, debug)
+    else:
+        parse(args, tz, debug)
 
 
 if __name__ == "__main__":

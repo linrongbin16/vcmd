@@ -33,6 +33,17 @@ def parse(args, tzname, debug):
             cmsg.from_to(f"now({value})", value.astimezone().isoformat())
 
 
+def list_timezone(args, debug):
+    if len(args) > 0:
+        for tz in pytz.all_timezones:
+            for a in args:
+                if a.lower() in tz.lower():
+                    cmsg.echo(tz)
+    else:
+        for tz in pytz.all_timezones:
+            cmsg.echo(tz)
+
+
 @click.command()
 @click.option(
     "--tz",
@@ -40,9 +51,16 @@ def parse(args, tzname, debug):
     help=
     "Output datetime in specified timezone, by default it's null, using local timezone"
 )
+@click.option(
+    "-l",
+    "--tz-list",
+    is_flag=True,
+    help=
+    "List timezones, by default list all timezones. Please specify args to filter output."
+)
 @click.option("--debug", is_flag=True, help="debug mode")
 @click.argument("args", nargs=-1)
-def vdt(tz, args, debug):
+def vdt(tz, tz_list, args, debug):
     """
 Parse unix epoch timestamp to ISO8601 format datetime, by default print now.
 
@@ -53,7 +71,8 @@ For example:
 2011-11-04T08:05:23.283831+08:00
 
 \b
-See: https://docs.python.org/3/library/datetime.html#datetime.datetime.isoformat
+See:
+* https://docs.python.org/3/library/datetime.html#datetime.datetime.isoformat
 
 \b
 Example:
@@ -68,11 +87,16 @@ $ vdt 1657616831.175318 --tz UTC
 [vcmd] `1657616831.17532` => `2022-07-12T09:07:11.175320+00:00`
 $ vdt 1657616831.175318 --tz US/Pacific
 [vcmd] `1657616831.17532` => `2022-07-12T02:07:11.175320-07:00`
+$ vdt -l shanghai
+[vcmd] Asia/Shanghai
 ```
     """
     if debug:
-        cmsg.debug(f"tz:{tz}, args:{args}, debug:{debug}")
-    parse(args, tz, debug)
+        cmsg.debug(f"tz:{tz}, tz_list:{tz_list}, args:{args}, debug:{debug}")
+    if tz_list:
+        list_timezone(args, debug)
+    else:
+        parse(args, tz, debug)
 
 
 if __name__ == "__main__":
