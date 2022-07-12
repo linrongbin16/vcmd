@@ -98,7 +98,7 @@ def compile_commands(debug):
     shutil.copyfile(f"{gen_folder}/compile_commands.json",
                     "compile_commands.json")
     shutil.rmtree(gen_folder, ignore_errors=True)
-    print("[dotfiles] generate `compile_commands.json`")
+    print("[vcmd] generate `compile_commands.json`")
 
 
 def compile_flags(debug):
@@ -119,7 +119,7 @@ def compile_flags(debug):
     for x in g:
         fp.write(f"{x}\n")
     fp.close()
-    print("[dotfiles] generate `compile_flags.txt`")
+    print("[vcmd] generate `compile_flags.txt`")
 
 
 def sub_cli_clangd(debug):
@@ -127,16 +127,16 @@ def sub_cli_clangd(debug):
         if debug:
             if util.is_windows():
                 print(
-                    "[dotfiles] Windows Platform, generating `compile_flags.txt` ..."
+                    "[vcmd] Windows Platform, generating `compile_flags.txt` ..."
                 )
             elif not os.path.exists("CMakeLists.txt"):
                 print(
-                    "[dotfiles] CMakeLists.txt missing, generating `compile_flags.txt` ..."
+                    "[vcmd] CMakeLists.txt missing, generating `compile_flags.txt` ..."
                 )
         compile_flags(debug)
     else:
         print(
-            "[dotfiles] Non-Windows Platform and CMakeLists.txt exist, generate `compile_commands.json` ..."
+            "[vcmd] Non-Windows Platform and CMakeLists.txt exist, generate `compile_commands.json` ..."
         )
         compile_commands(debug)
 
@@ -178,18 +178,18 @@ def npm_mirror():
 
 def ubuntu_mirror():
     print(
-        "[dotfiles] replace 'archive.ubuntu/com' to 'mirrors.ustc.edu.cn' in /etc/apt/sources.list"
+        "[vcmd] replace 'archive.ubuntu/com' to 'mirrors.ustc.edu.cn' in /etc/apt/sources.list"
     )
     util.backup_file("/etc/apt/sources.list")
     if os.path.exists("/etc/apt/source.list"):
         replace_cmd = "sudo sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list"
         os.system(replace_cmd)
     print(
-        "[dotfiles] for ubuntu version focal(20.04) bionic(18.04) artful(17.10) xenial(16.04) trusty(14.04)"
+        "[vcmd] for ubuntu version focal(20.04) bionic(18.04) artful(17.10) xenial(16.04) trusty(14.04)"
     )
-    print("[dotfiles] you could also manually edit source.list like below")
+    print("[vcmd] you could also manually edit source.list like below")
     mirror_content = """
-# [dotfiles] replace xenial with other ubuntu version for your needs
+# [vcmd] replace xenial with other ubuntu version for your needs
 deb https://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse
 # deb-src https://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse
 deb https://mirrors.ustc.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse
@@ -205,19 +205,19 @@ deb https://mirrors.ustc.edu.cn/ubuntu/ xenial-security main restricted universe
 """
     print(mirror_content)
     print(
-        "[dotfiles] please see http://mirrors.ustc.edu.cn/help/ubuntu.html for more details"
+        "[vcmd] please see http://mirrors.ustc.edu.cn/help/ubuntu.html for more details"
     )
 
 
 def debian_mirror():
     print(
-        "[dotfiles] replace 'deb.debian.org' to 'mirrors.ustc.edu.cn' in /etc/apt/sources.list"
+        "[vcmd] replace 'deb.debian.org' to 'mirrors.ustc.edu.cn' in /etc/apt/sources.list"
     )
     util.backup_file("/etc/apt/sources.list")
     if os.path.exists("/etc/apt/source.list"):
         replace_cmd = "sudo sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list"
         os.system(replace_cmd)
-    print("[dotfiles] you could also manually edit source.list like below")
+    print("[vcmd] you could also manually edit source.list like below")
     mirror_content = """
 deb http://mirrors.ustc.edu.cn/debian stable main contrib non-free
 # deb-src http://mirrors.ustc.edu.cn/debian stable main contrib non-free
@@ -230,13 +230,13 @@ deb http://mirrors.ustc.edu.cn/debian stable-updates main contrib non-free
 """
     print(mirror_content)
     print(
-        "[dotfiles] please see http://mirrors.ustc.edu.cn/help/debian.html for more details"
+        "[vcmd] please see http://mirrors.ustc.edu.cn/help/debian.html for more details"
     )
 
 
 def fedora_mirror():
     print(
-        "[dotfiles] replace fedora.repo fedora-modular.repo fedora-updates.repo fedora-updates-modular.repo in /etc/yum.repos.d/"
+        "[vcmd] replace fedora.repo fedora-modular.repo fedora-updates.repo fedora-updates-modular.repo in /etc/yum.repos.d/"
     )
     replace_cmd = """sudo sed -e 's|^metalink=|#metalink=|g' \\
          -e 's|^#baseurl=http://download.fedoraproject.org/pub/fedora/linux|baseurl=https://mirrors.ustc.edu.cn/fedora|g' \\
@@ -248,12 +248,12 @@ def fedora_mirror():
     print(replace_cmd)
     os.system(replace_cmd)
     print(
-        "[dotfiles] please see http://mirrors.ustc.edu.cn/help/fedora.html for more details"
+        "[vcmd] please see http://mirrors.ustc.edu.cn/help/fedora.html for more details"
     )
 
 
 def manjaro_mirror():
-    print("[dotfiles] update manjaro mirror to China")
+    print("[vcmd] update manjaro mirror to China")
     update_mirror_cmd = "sudo pacman-mirrors -i -c China -m rank"
     refresh_mirror_cmd = "sudo pacman -Syy"
     os.system(update_mirror_cmd)
@@ -276,7 +276,7 @@ def sub_cli_mirror(mirror, debug):
     elif mirror == "manjaro":
         manjaro_mirror()
     else:
-        print(f"[dotfiles] unknown mirror option:{mirror}")
+        print(f"[vcmd] unknown mirror option:{mirror}")
 
 
 @click.command()
@@ -309,7 +309,7 @@ Example:
 \b
 ```
 $ vconf -c
-[dotfiles] Non-Windows Platform and CMakeLists.txt exist, generate `compile_commands.json` ...
+[vcmd] Non-Windows Platform and CMakeLists.txt exist, generate `compile_commands.json` ...
 -- The CXX compiler identification is AppleClang 12.0.0.12000032
 -- Detecting CXX compiler ABI info
 -- Detecting CXX compiler ABI info - done
@@ -329,7 +329,7 @@ CMAKE_BUILD_TYPE:
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /Users/linrongbin16/workspace/github/hello-cpp/.vconf.1644556264.228266
-[dotfiles] generate `compile_commands.json`
+[vcmd] generate `compile_commands.json`
 ```
     """
     if debug:
@@ -342,7 +342,7 @@ CMAKE_BUILD_TYPE:
         sub_cli_mirror(mirror, debug)
     else:
         print(
-            f"[dotfiles] unknown option, please try `vconf --help` for more information"
+            f"[vcmd] unknown option, please try `vconf --help` for more information"
         )
 
 

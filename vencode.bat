@@ -1,4 +1,4 @@
 @ECHO OFF
 REM Copyright 2018-  <linrongbin16@gmail.com>
-python3 %USERPROFILE%\.dotfiles\vencode %*
+python3 %USERPROFILE%\.vcmd\vencode %*
 

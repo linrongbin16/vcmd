@@ -16,25 +16,24 @@ GIT_CONFIG = os.path.expanduser("~") + SLASH + ".gitconfig"
 
 def add_proxy(args, debug):
     if debug:
-        print(f"[dotfiles] add proxy:{args}")
+        print(f"[vcmd] add proxy:{args}")
     if len(args) != 1:
         print(
-            "[dotfiles] please provide proxy in `name=protocol://ip:port` format"
-        )
+            "[vcmd] please provide proxy in `name=protocol://ip:port` format")
         return
     util.append_file(PROXY_DB, f"{args[0]}\n")
-    print(f"[dotfiles] add ip proxy: {args[0]}")
+    print(f"[vcmd] add ip proxy: {args[0]}")
 
 
 def erase_proxy(name, debug):
     if debug:
-        print(f"[dotfiles] remove ip proxy:{name}")
+        print(f"[vcmd] remove ip proxy:{name}")
     proxies = util.read_file_by_lines(PROXY_DB)
     proxies = [p.strip() for p in proxies if p and len(p.strip()) > 0]
     saved_proxies = []
     for p in proxies:
         if p.strip().startswith(name):
-            print(f"[dotfiles] remove proxy - {p.strip()}")
+            print(f"[vcmd] remove proxy - {p.strip()}")
             continue
         saved_proxies.append(p.strip() + "\n")
     util.write_file(PROXY_DB, saved_proxies)
@@ -47,12 +46,12 @@ def listing_proxy(debug):
         print(f"{GIT_CONFIG}:{proxies}")
     n = 0
     if proxies and len(proxies) > 0:
-        print("[dotfiles] stored ip proxy:")
+        print("[vcmd] stored ip proxy:")
         for i, p in enumerate(proxies):
-            print(f"[dotfiles]   {i} - {p.strip()}")
+            print(f"[vcmd]   {i} - {p.strip()}")
             n += 1
     else:
-        print("[dotfiles] stored ip proxy - empty")
+        print("[vcmd] stored ip proxy - empty")
 
 
 def show_git_proxy(debug):
@@ -79,18 +78,18 @@ def show_git_proxy(debug):
                     title, str) and title.lower().startswith("[http"):
                 proxies.append(f"{title}={current.split('=')[-1].strip()}")
     if len(proxies) > 0:
-        print(f"[dotfiles] git proxy:")
+        print(f"[vcmd] git proxy:")
         for i, p in enumerate(proxies):
-            print(f"[dotfiles]   {i} - {p}")
+            print(f"[vcmd]   {i} - {p}")
     else:
-        print("[dotfiles] git proxy - empty")
+        print("[vcmd] git proxy - empty")
 
 
 def show_environment_proxy(debug):
     if debug:
         print(f"OS platform is windows:{util.is_windows()}")
 
-    print(f"[dotfiles] environment proxy:")
+    print(f"[vcmd] environment proxy:")
     HTTP_PROXY_KEY = 'HTTP_PROXY' if util.is_windows() else 'http_proxy'
     HTTPS_PROXY_KEY = 'HTTPS_PROXY' if util.is_windows() else 'https_proxy'
     http_proxy_value = os.environ[
@@ -98,11 +97,11 @@ def show_environment_proxy(debug):
     https_proxy_value = os.environ[
         HTTPS_PROXY_KEY] if HTTPS_PROXY_KEY in os.environ else None
     if util.is_windows():
-        print(f"[dotfiles]   0 - %{HTTP_PROXY_KEY}%: {http_proxy_value}")
-        print(f"[dotfiles]   1 - %{HTTPS_PROXY_KEY}%: {https_proxy_value}")
+        print(f"[vcmd]   0 - %{HTTP_PROXY_KEY}%: {http_proxy_value}")
+        print(f"[vcmd]   1 - %{HTTPS_PROXY_KEY}%: {https_proxy_value}")
     else:
-        print(f"[dotfiles]   0 - ${HTTP_PROXY_KEY}: {http_proxy_value}")
-        print(f"[dotfiles]   1 - ${HTTPS_PROXY_KEY}: {https_proxy_value}")
+        print(f"[vcmd]   0 - ${HTTP_PROXY_KEY}: {http_proxy_value}")
+        print(f"[vcmd]   1 - ${HTTPS_PROXY_KEY}: {https_proxy_value}")
 
 
 def show_proxy(debug):
@@ -119,7 +118,7 @@ def find_proxy_by_name(name, debug):
     proxies = util.read_file_by_lines(PROXY_DB)
     proxies = [p.strip() for p in proxies if p and len(p.strip()) > 0]
     if debug:
-        print(f"[dotfiles] {PROXY_DB}:{proxies}")
+        print(f"[vcmd] {PROXY_DB}:{proxies}")
     if proxies is None or len(proxies) == 0:
         return None
     for p in proxies:
@@ -132,7 +131,7 @@ def find_proxy_by_name(name, debug):
 def set_git_proxy(name, debug):
     proxy = find_proxy_by_name(name, debug)
     if proxy is None or len(proxy) == 0:
-        print(f"[dotfiles] ip proxy:{name} not found, exit...")
+        print(f"[vcmd] ip proxy:{name} not found, exit...")
         return
     os.system("git config --global --unset https.proxy")
     os.system("git config --global --unset http.proxy")
@@ -140,7 +139,7 @@ def set_git_proxy(name, debug):
     httpscmd = f"git config --global https.proxy {proxy[1]}"
     os.system(httpcmd)
     os.system(httpscmd)
-    print(f"[dotfiles] set git proxy:{proxy}")
+    print(f"[vcmd] set git proxy:{proxy}")
 
 
 def clear_proxy():
@@ -150,27 +149,27 @@ def clear_proxy():
 def print_shell_proxy(name, debug):
     proxy = find_proxy_by_name(name, debug)
     if proxy is None or len(proxy) == 0:
-        print(f"[dotfiles] ip proxy:{name} not found, exit...")
+        print(f"[vcmd] ip proxy:{name} not found, exit...")
         return
-    print(f"[dotfiles] export http_proxy={proxy[1]} https_proxy={proxy[1]}")
+    print(f"[vcmd] export http_proxy={proxy[1]} https_proxy={proxy[1]}")
 
 
 def print_powershell_proxy(name, debug):
     proxy = find_proxy_by_name(name, debug)
     if proxy is None or len(proxy) == 0:
-        print(f"[dotfiles] ip proxy:{name} not found, exit...")
+        print(f"[vcmd] ip proxy:{name} not found, exit...")
         return
-    print(f"[dotfiles] $env:HTTP_PROXY=\"{proxy[1]}\"")
-    print(f"[dotfiles] $env:HTTPS_PROXY=\"{proxy[1]}\"")
+    print(f"[vcmd] $env:HTTP_PROXY=\"{proxy[1]}\"")
+    print(f"[vcmd] $env:HTTPS_PROXY=\"{proxy[1]}\"")
 
 
 def print_cmd_proxy(name, debug):
     proxy = find_proxy_by_name(name, debug)
     if proxy is None or len(proxy) == 0:
-        print(f"[dotfiles] ip proxy:{name} not found, exit...")
+        print(f"[vcmd] ip proxy:{name} not found, exit...")
         return
-    print(f"[dotfiles] set HTTP_PROXY=\"{proxy[1]}\"")
-    print(f"[dotfiles] set HTTPS_PROXY=\"{proxy[1]}\"")
+    print(f"[vcmd] set HTTP_PROXY=\"{proxy[1]}\"")
+    print(f"[vcmd] set HTTPS_PROXY=\"{proxy[1]}\"")
 
 
 @click.command()
@@ -221,7 +220,7 @@ def vproxy(add, listing, show, erase, clear, set_git, reset_git, shell,
         print_cmd_proxy(cmd, debug)
     else:
         print(
-            "[dotfiles] unknown option, please try `vproxy --help` for more information"
+            "[vcmd] unknown option, please try `vproxy --help` for more information"
         )
 
 

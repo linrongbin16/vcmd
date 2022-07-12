@@ -28,8 +28,7 @@ def compress_target(filename, option):
         util.backup_file(target)
         os.system('zip -r "%s" "%s"' % (target, filename))
     else:
-        print("[dotfiles] compress filetype:%s is not support, exit..." %
-              (option))
+        print("[vcmd] compress filetype:%s is not support, exit..." % (option))
 
 
 def extract_target(filename):
@@ -46,8 +45,7 @@ def extract_target(filename):
     elif filename.endswith(".jar"):
         os.system('jar xf "%s"' % (filename))
     else:
-        print("[dotfiles] file:%s extract is not support, exit..." %
-              (filename))
+        print("[vcmd] file:%s extract is not support, exit..." % (filename))
 
 
 @click.command()
@@ -94,7 +92,7 @@ x date-3.0.1/include/date/date.h
         extract_target(args[0])
     else:
         print(
-            "[dotfiles] unknown option, please try `vpack --help` for more information"
+            "[vcmd] unknown option, please try `vpack --help` for more information"
         )
 
 

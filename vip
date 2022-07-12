@@ -72,41 +72,38 @@ def _validate_ipv6(ipv6):
 
 def _min_ipv4():
     min_ipv4 = ipaddress.IPv4Address("0.0.0.0")
-    print("[dotfiles] minimum ipv4: '%s' (%d)" %
-          (str(min_ipv4), int(min_ipv4)))
+    print("[vcmd] minimum ipv4: '%s' (%d)" % (str(min_ipv4), int(min_ipv4)))
     exit(0)
 
 
 def _max_ipv4():
     max_ipv4 = ipaddress.IPv4Address("255.255.255.255")
-    print("[dotfiles] maximum ipv4: '%s' (%d)" %
-          (str(max_ipv4), int(max_ipv4)))
+    print("[vcmd] maximum ipv4: '%s' (%d)" % (str(max_ipv4), int(max_ipv4)))
     exit(0)
 
 
 def _loopback_ipv4():
     lo_ipv4 = ipaddress.IPv4Address("127.0.0.1")
-    print("[dotfiles] loopback ipv4: '%s' (%d)" % (str(lo_ipv4), int(lo_ipv4)))
+    print("[vcmd] loopback ipv4: '%s' (%d)" % (str(lo_ipv4), int(lo_ipv4)))
     exit(0)
 
 
 def _min_ipv6():
     min_ipv6 = ipaddress.IPv6Address("::0")
-    print("[dotfiles] minimum ipv4: '%s' or '%s' (%d)" %
+    print("[vcmd] minimum ipv4: '%s' or '%s' (%d)" %
           (str(min_ipv6), "::0", int(min_ipv6)))
     exit(0)
 
 
 def _max_ipv6():
     max_ipv6 = ipaddress.IPv6Address("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")
-    print("[dotfiles] maximum ipv6: '%s' (%d)" %
-          (str(max_ipv6), int(max_ipv6)))
+    print("[vcmd] maximum ipv6: '%s' (%d)" % (str(max_ipv6), int(max_ipv6)))
     exit(0)
 
 
 def _loopback_ipv6():
     lo_ipv6 = ipaddress.IPv6Address("::1")
-    print("[dotfiles] loopback ipv4: '%s' (%d)" % (str(lo_ipv6), int(lo_ipv6)))
+    print("[vcmd] loopback ipv4: '%s' (%d)" % (str(lo_ipv6), int(lo_ipv6)))
     exit(0)
 
 
