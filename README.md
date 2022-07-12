@@ -4,7 +4,8 @@ A command line utilities separated from [lin.vim](https://github.com/linrongbin1
 
 # Dependency
 
-python3
+- [python3](https://www.python.org/)
+- Optional [pytz](https://pypi.org/project/pytz/) if you need datetime commands: vts/vdt.
 
 # Install
 
@@ -29,4 +30,4 @@ Please manually add `~/.vcmd` to environment variable **PATH**, for Windows it's
 - vlsp - Generate files for [language server protocol](https://microsoft.github.io/language-server-protocol/) tools, such as [clangd](https://clangd.llvm.org/).
 - vsshgen - Generate SSH Keys.
 - venc/vdec - Text encode/decode tool for [base64](https://en.wikipedia.org/wiki/Base64) and [URL-encoding](https://en.wikipedia.org/wiki/Percent-encoding).
-- vgp - Grep wrapper for [ripgrep](https://github.com/BurntSushi/ripgrep).
+- vgr - Grep wrapper for [ripgrep](https://github.com/BurntSushi/ripgrep).

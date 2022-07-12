@@ -1,0 +1,79 @@
+#! /usr/bin/env python3
+# -*- coding:utf-8 -*-
+# Copyright 2018-  <linrongbin16@gmail.com>
+
+import sys
+import datetime
+import click
+import pytz
+
+sys.path.append(".")
+import common.msg as cmsg
+
+
+def parse(args, tzname, debug):
+    if len(args) > 0:
+        args = " ".join(args)
+        value = datetime.datetime.fromtimestamp(float(args))
+        if debug:
+            cmsg.debug(f"timezone: {value.tzinfo}")
+        if tzname:
+            cmsg.from_to(args,
+                         value.astimezone(pytz.timezone(tzname)).isoformat())
+        else:
+            cmsg.from_to(args, value.astimezone().isoformat())
+    else:
+        value = datetime.datetime.now()
+        if debug:
+            cmsg.debug(f"timezone: {value.tzinfo}")
+        if tzname:
+            cmsg.from_to(f"now({value})",
+                         value.astimezone(pytz.timezone(tzname)).isoformat())
+        else:
+            cmsg.from_to(f"now({value})", value.astimezone().isoformat())
+
+
+@click.command()
+@click.option(
+    "--tz",
+    required=False,
+    help=
+    "Output datetime in specified timezone, by default it's null, using local timezone"
+)
+@click.option("--debug", is_flag=True, help="debug mode")
+@click.argument("args", nargs=-1)
+def vdt(tz, args, debug):
+    """
+Parse unix epoch timestamp to ISO8601 format datetime, by default print now.
+
+\b
+Output format is `YYYY-MM-DDTHH:MM:SS.ffffff+HH:MM`.
+For example:
+2011-11-04T00:05:23.283831+00:00
+2011-11-04T08:05:23.283831+08:00
+
+\b
+See: https://docs.python.org/3/library/datetime.html#datetime.datetime.isoformat
+
+\b
+Example:
+
+\b
+```
+$ vdt
+[vcmd] `now(2022-07-12 17:06:39.294310)` => `2022-07-12T17:06:39.294310+08:00`
+$ vdt 1657616831.175318
+[vcmd] `1657616831.17532` => `2022-07-12T17:07:11.175320+08:00`
+$ vdt 1657616831.175318 --tz UTC
+[vcmd] `1657616831.17532` => `2022-07-12T09:07:11.175320+00:00`
+$ vdt 1657616831.175318 --tz US/Pacific
+[vcmd] `1657616831.17532` => `2022-07-12T02:07:11.175320-07:00`
+```
+    """
+    if debug:
+        cmsg.debug(f"tz:{tz}, args:{args}, debug:{debug}")
+    parse(args, tz, debug)
+
+
+if __name__ == "__main__":
+    vdt()

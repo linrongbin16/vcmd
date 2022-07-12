@@ -11,18 +11,14 @@ sys.path.append(".")
 import common.msg as cmsg
 
 
-def output(src, dst):
-    cmsg.echo(f"`{src}` => `{dst}`")
-
-
 def decode_base64(s):
     b = s.encode("UTF-8")
     b = base64.b64decode(b)
-    output(s, b.decode('UTF-8'))
+    cmsg.from_to(s, b.decode('UTF-8'))
 
 
 def decode_url(s):
-    output(s, parse.unquote(s))
+    cmsg.from_to(s, parse.unquote(s))
 
 
 @click.command()

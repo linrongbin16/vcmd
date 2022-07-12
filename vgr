@@ -76,7 +76,7 @@ def show_ignored_filetype(debug):
 )
 @click.option("--debug", is_flag=True, help="debug mode")
 @click.argument("args", nargs=-1)
-def vgp(count, word, zip_file, ignore_case, smart_case, sort, depth,
+def vgr(count, word, zip_file, ignore_case, smart_case, sort, depth,
         ignore_ftype, purge_ignored, show_ignored, debug, args):
     """
 Grep wrapper for rg(ripgrep) with .ignore management
@@ -85,7 +85,7 @@ Example:
 
 \b
 ```
-$ vgp -d 2 --sort modified -w -c lin
+$ vgr -d 2 --sort modified -w -c lin
 install/fedora.sh:1
 install/ubuntu.sh:2
 install.ps1:5
@@ -131,4 +131,4 @@ command/vgit:1
 
 
 if __name__ == "__main__":
-    vgp()
+    vgr()

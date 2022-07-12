@@ -1,0 +1,102 @@
+#! /usr/bin/env python3
+# -*- coding:utf-8 -*-
+# Copyright 2018-  <linrongbin16@gmail.com>
+
+import sys
+import datetime
+import click
+import pytz
+
+sys.path.append(".")
+import common.msg as cmsg
+
+
+def parse(args, tzname, debug):
+    if len(args) > 0:
+        args = " ".join(args)
+        value = datetime.datetime.fromisoformat(args)
+        if debug:
+            cmsg.debug(f"timezone: {value.tzinfo}")
+        if tzname:
+            value = datetime.datetime(value.year,
+                                      value.month,
+                                      value.day,
+                                      value.hour,
+                                      value.minute,
+                                      value.second,
+                                      value.microsecond,
+                                      tzinfo=pytz.timezone(tzname))
+            if debug:
+                cmsg.debug(
+                    f"timezone changed by option --tz:{tzname}: {value.tzinfo}"
+                )
+        cmsg.from_to(args, "{:.6f}".format(value.timestamp()))
+    else:
+        value = datetime.datetime.now()
+        if debug:
+            cmsg.debug(f"timezone: {value.tzinfo}")
+        if tzname:
+            value = datetime.datetime(value.year,
+                                      value.month,
+                                      value.day,
+                                      value.hour,
+                                      value.minute,
+                                      value.second,
+                                      value.microsecond,
+                                      tzinfo=pytz.timezone(tzname))
+            if debug:
+                cmsg.debug(
+                    f"timezone changed by option --tz:{tzname}: {value.tzinfo}"
+                )
+        cmsg.from_to(f"now({value})", "{:.6f}".format(value.timestamp()))
+
+
+@click.command()
+@click.option(
+    "--tz",
+    required=False,
+    help=
+    "Treat input datetime in specified timezone, by default it's null, using timezone (the `+HH:MM` part on the right side) specified in input. If not null, this option will overwrite input timezone info."
+)
+@click.option("--debug", is_flag=True, help="debug mode")
+@click.argument("args", nargs=-1)
+def vts(tz, args, debug):
+    """
+Parse ISO8601 datetime to UTC unix epoch timestamp, by default print now in timestamp.
+
+\b
+Supproted format is `YYYY-MM-DD[*HH[:MM[:SS[.fff[fff]]]][+HH:MM[:SS[.ffffff]]]]`.
+For example:
+2011-11-04
+2011-11-04T00:05:23
+2011-11-04 00:05:23.283
+2011-11-04 00:05:23.283+00:00
+2011-11-04T00:05:23+04:00
+
+\b
+See: https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat
+
+\b
+Example:
+
+\b
+```
+$ vts
+[vcmd] 2022-07-12 16:37:27.517090 => 1657615047.517090
+$ vts 2022-07-12
+[vcmd] 2022-07-12 => 1657555200.000000
+$ vts 2022-07-12T16:39:12.124+08:00
+[vcmd] 2022-07-12T16:39:12.124+08:00 => 1657615152.124000
+$ vts 2022-07-12T08:39:12.124123+00:00
+[vcmd] 2022-07-12T08:39:12.124123+00:00 => 1657615152.124123
+$ vts 2022-07-12T08:39:12.124123+00:00
+[vcmd] 2022-07-12T08:39:12.124123+00:00 => 1657615152.124123
+$ vts 2022-07-12T16:39:12.124123+08:00 --tz UTC
+[vcmd] 2022-07-12T16:39:12.124123+08:00 => 1657643952.124123
+```
+    """
+    parse(args, tz, debug)
+
+
+if __name__ == "__main__":
+    vts()

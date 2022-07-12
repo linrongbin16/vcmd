@@ -27,3 +27,7 @@ def unknown_option():
     echo(
         f"Unknown option, please try `{sys.argv[0]} --help` for more information"
     )
+
+
+def from_to(src, dst):
+    echo(f"`{src}` => `{dst}`")
