@@ -1,0 +1,139 @@
+#! /usr/bin/env python3
+# -*- coding:utf-8 -*-
+# Copyright 2018-  <linrongbin16@gmail.com>
+
+import sys
+import os
+import time
+import click
+
+sys.path.append(".")
+import common.sys as csys
+import common.msg as cmsg
+import common.fs as cfs
+
+
+def get_encoding(outs):
+    ec = "".join(outs).strip().split(":")[1]
+    if ec.find("no result") >= 0:
+        return None
+    ec = ec.strip().split(" ")[0]
+    return ec
+
+
+def get_files(files):
+    if len(files) == 0:
+        root = os.getcwd()
+        files = [os.path.relpath(f, root) for f in cfs.list_files(".")]
+    return files
+
+
+def convert_fec(target_encoding, files):
+    target_encoding = target_encoding.upper()
+    encoding_name_map = {"UTF-8-SIG": "UTF-8"}
+    files = get_files(files)
+    for f in files:
+        detect_outs, detect_errs = csys.run(f"chardetect {f}")
+        detect_encoding = get_encoding(detect_outs)
+        if detect_encoding is None:
+            cmsg.echo(f"{f}: no encoding detected")
+            continue
+        detect_encoding = detect_encoding.upper()
+        detect_encoding = (encoding_name_map[detect_encoding]
+                           if detect_encoding in encoding_name_map else
+                           detect_encoding)
+        try:
+            convert_outs, convert_errs = csys.run(
+                f"iconv -f {detect_encoding} -t {target_encoding} {f}")
+            temp_name = f"{f}.temp.{time.time()}"
+            temp_fp = open(temp_name, "w")
+            temp_fp.writelines(convert_outs)
+            temp_fp.close()
+            os.rename(f, temp_name)
+            cmsg.echo(f"{f}: {detect_encoding} => {target_encoding}")
+        except:
+            cmsg.exception(
+                f"failed to convert encoding for {f}: {detect_encoding} => {target_encoding}"
+            )
+
+
+def show_fec(files):
+    files = get_files(files)
+    for f in files:
+        detect_outs, detect_errs = csys.run(f"chardetect {f}")
+        detect_encoding = get_encoding(detect_outs)
+        cmsg.echo("%s: %s" % (f, detect_encoding))
+
+
+@click.command()
+@click.option("-s", "--show-encoding", is_flag=True, help="Show file encoding")
+@click.option("-c",
+              "--convert-encoding",
+              required=False,
+              type=click.Choice(
+                  ["GB18030", "GB2312", "GBK", "UTF-8", "UTF-8-SIG", "ASCII"]),
+              help="Convert file encoding to target encoding")
+@click.argument("args", nargs=-1)
+@click.option("--debug", is_flag=True, help="debug mode")
+def vfec(show_encoding, convert_encoding, args, debug):
+    """
+File encoding operations.
+
+Example:
+
+\b
+```
+$ vfec -s test.log
+test.log: ascii
+
+\b
+$ vfec -s
+[vcmd] l.bat: ascii
+[vcmd] LICENSE: ascii
+[vcmd] ll.bat: ascii
+[vcmd] README.md: ascii
+[vcmd] util.py: ascii
+[vcmd] vdec: ascii
+[vcmd] vdec.bat: ascii
+[vcmd] venc: ascii
+[vcmd] venc.bat: ascii
+[vcmd] vfec: ascii
+[vcmd] vfec.bat: None
+[vcmd] vft: ascii
+[vcmd] vft.bat: ascii
+[vcmd] vgit: ascii
+[vcmd] vgit.bat: ascii
+[vcmd] vgp: ascii
+[vcmd] vgp.bat: ascii
+[vcmd] vip: ascii
+[vcmd] vip.bat: ascii
+[vcmd] vlsp: ascii
+[vcmd] vlsp.bat: ascii
+[vcmd] vpack: ascii
+[vcmd] vpack.bat: ascii
+[vcmd] vproxy: ascii
+[vcmd] vproxy.bat: ascii
+[vcmd] vsshgen: ascii
+[vcmd] vsshgen.bat: ascii
+[vcmd] vtime: ascii
+[vcmd] vtime.bat: ascii
+[vcmd] common\\fs.py: ascii
+[vcmd] common\\msg.py: ascii
+[vcmd] common\\sys.py: ascii
+[vcmd] common\\__init__.py: None
+```
+    """
+    if debug:
+        cmsg.debug(
+            f"show_encoding:{show_encoding}, convert_encoding:{convert_encoding}, args:{args}, debug:{debug}"
+        )
+    if show_encoding:
+        show_fec(args)
+    elif convert_encoding:
+        convert_fec(convert_encoding, args)
+    else:
+        cmsg.unknown_option()
+
+
+if __name__ == "__main__":
+    vfec()
