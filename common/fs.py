@@ -3,6 +3,10 @@
 # Copyright 2018- <linrongbin16@gmail.com>
 
 import os
+import datetime
+import sys
+
+sys.path.append(".")
 
 
 def list_files(directory, include_hidden=False, depth=99):
@@ -49,3 +53,13 @@ def valid_dir(d):
 
 def valid_file(f):
     return os.path.exists(f) and os.path.isfile(f)
+
+
+def backup(src):
+    if not os.path.exists(src):
+        return
+    dst = f"{src}.{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}"
+    os.rename(src, dst)
+
+    import msg
+    msg.echo(f"Backup from {src} to {dst}")
