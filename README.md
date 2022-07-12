@@ -22,3 +22,9 @@ Please manually add `source ~/.vcmd/.vcmdrc` to local rc file if you're using ot
 ### For non-posix shell (Windows)
 
 Please manually add `~/.vcmd` to environment variable **PATH**, for Windows it's `$env:Path`.
+
+# Introduction
+
+- vlsp - Generate files for [language server protocol](https://microsoft.github.io/language-server-protocol/) tools, such as [clangd](https://clangd.llvm.org/).
+- vsshgen - Generate SSH Keys.
+- venc/vdec - Text encode/decode tool for [base64](https://en.wikipedia.org/wiki/Base64) and [URL/URI](https://en.wikipedia.org/wiki/Percent-encoding).
