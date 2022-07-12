@@ -1,0 +1,134 @@
+#! /usr/bin/env python3
+# -*- coding:utf-8 -*-
+# Copyright 2018-  <linrongbin16@outlook.com>
+
+import sys
+import os
+import click
+
+sys.path.append(".")
+import common.sys as csys
+import common.fs as cfs
+import common.msg as cmsg
+
+SLASH = "\\" if csys.is_Windows() else "/"
+IGNORE = os.path.expanduser("~") + SLASH + ".ignore"
+
+
+def ignore_filetype(ftypes, debug):
+    if debug:
+        cmsg.debug(f"Ignore file types: {ftypes}")
+    cfs.append_file(IGNORE, [f"{t}\n" for t in ftypes])
+
+
+def purge_ignored_filetype(debug):
+    cfs.purge_file(IGNORE)
+
+
+def show_ignored_filetype(debug):
+    cmsg.echo(f"Ignored file types in {IGNORE}:")
+    csys.cmd(f"cat {IGNORE}")
+
+
+@click.command()
+@click.option("-c", "--count", is_flag=True, help="Count pattern")
+@click.option("-w", "--word", is_flag=True, help="Search word")
+@click.option(
+    "-z",
+    "--zip-file",
+    is_flag=True,
+    help="Search compressed file (gzip, bzip2, lzma, xz, lz4, brotli, zstd, etc)"
+)
+@click.option("-i", "--ignore-case", is_flag=True, help="Ignore case")
+@click.option(
+    "-s",
+    "--smart-case",
+    is_flag=True,
+    help=
+    "Smart case, like --ignore-case, but disable itself when pattern contains upper case",
+)
+@click.option(
+    "--sort",
+    type=click.Choice(["none", "path", "modified", "accessed", "created"]),
+    default="none",
+    help="Sort output, by default none",
+)
+@click.option("-d",
+              "--depth",
+              type=int,
+              default=-1,
+              help="Search depth, by default -1(no limit)")
+@click.option(
+    "--ignore-ftype",
+    required=False,
+    multiple=True,
+    help="Ignore specified file type",
+)
+@click.option(
+    "--purge-ignored",
+    is_flag=True,
+    help="Purge all configured ignore file types",
+)
+@click.option(
+    "--show-ignored",
+    is_flag=True,
+    help="Show all configured ignore file types",
+)
+@click.option("--debug", is_flag=True, help="debug mode")
+@click.argument("args", nargs=-1)
+def vgp(count, word, zip_file, ignore_case, smart_case, sort, depth,
+        ignore_ftype, purge_ignored, show_ignored, debug, args):
+    """
+Grep wrapper for rg(ripgrep) with .ignore management
+
+Example:
+
+\b
+```
+$ vgp -d 2 --sort modified -w -c lin
+install/fedora.sh:1
+install/ubuntu.sh:2
+install.ps1:5
+template/linvimrc-template.sh:1
+template/user-settings-template.vim:3
+install.sh:7
+lin.vim:3
+README.md:22
+command/vgit:1
+```
+    """
+    if debug:
+        cmsg.debug(
+            f"count:{count}, word:{word}, zip_file:{zip_file}, ignore_case:{ignore_case}, smart_case:{smart_case}, sort:{sort}, depth:{depth}, ignore_ftype:{ignore_ftype}, purge_ignored:{purge_ignored}, show_ignored:{show_ignored}, debug:{debug}, args:{args}, type:{type(args)}"
+        )
+    if ignore_ftype:
+        ignore_filetype(ignore_ftype, debug)
+    elif purge_ignored:
+        purge_ignored_filetype(debug)
+    elif show_ignored:
+        show_ignored_filetype(debug)
+    else:
+        cmd = f"rg"
+        if count:
+            cmd += " -c"
+        if word:
+            cmd += " -w"
+        if zip_file:
+            cmd += " -z"
+        if ignore_case:
+            cmd += " -i"
+        if smart_case:
+            cmd += " -S"
+        if sort:
+            cmd += f" --sort {sort}"
+        if depth and depth >= 0:
+            cmd += f" --max-depth {depth}"
+        for p in args:
+            cmd += f" {p}"
+        if debug:
+            cmsg.debug(f"execute cmd:{cmd}")
+        csys.cmd(cmd)
+
+
+if __name__ == "__main__":
+    vgp()

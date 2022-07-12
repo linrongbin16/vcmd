@@ -152,8 +152,7 @@ def generate_for_clangd(debug):
     "-c",
     "--clangd",
     is_flag=True,
-    help=
-    "generate compile_commands.json/compile_flags.txt for clangd code complete",
+    help="Generate `compile_commands.json` or `compile_flags.txt` for clangd",
 )
 @click.option("--debug", is_flag=True, help="debug mode")
 def vlsp(clangd, debug):

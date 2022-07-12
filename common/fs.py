@@ -63,3 +63,40 @@ def backup(src):
 
     import msg
     msg.echo(f"Backup from {src} to {dst}")
+
+
+def read_file(name):
+    fp = open(name, "r")
+    data = fp.read()
+    fp.close()
+    return data
+
+
+def read_file_by_lines(name):
+    fp = open(name, "r")
+    lines = fp.readlines()
+    fp.close()
+    return lines
+
+
+def write_file(name, text):
+    fp = open(name, "w")
+    if isinstance(text, list):
+        fp.writelines(text)
+    else:
+        fp.write(text)
+    fp.close()
+
+
+def append_file(name, text):
+    fp = open(name, "a+")
+    if isinstance(text, list):
+        fp.writelines(text)
+    else:
+        fp.write(text)
+    fp.close()
+
+
+def purge_file(name):
+    fp = open(name, "w")
+    fp.close()
