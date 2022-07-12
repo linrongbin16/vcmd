@@ -1,8 +1,8 @@
 #! /bin/bash
 
 # better ls
-alias l="ls -lh"
-alias ll="ls -lah"
+alias l="ls -lh --color=auto"
+alias ll="ls -lah --color=auto"
 
 # coredump
 ulimit -c unlimited

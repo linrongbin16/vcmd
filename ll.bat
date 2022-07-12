@@ -1,1 +1,1 @@
-ls -lah
+ls -lah --color=auto
