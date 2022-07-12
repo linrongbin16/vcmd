@@ -61,8 +61,8 @@ def backup(src):
     dst = f"{src}.{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}"
     os.rename(src, dst)
 
-    import msg
-    msg.echo(f"Backup from {src} to {dst}")
+    import common.msg as cmsg
+    cmsg.echo(f"Backup from {src} to {dst}")
 
 
 def read_file(name):

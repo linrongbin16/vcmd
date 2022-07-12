@@ -31,4 +31,4 @@ Please manually add `~/.vcmd` to environment variable **PATH**, for Windows it's
 - vsshgen - Generate SSH Keys.
 - venc/vdec - Text encode/decode tool for [base64](https://en.wikipedia.org/wiki/Base64) and [URL-encoding](https://en.wikipedia.org/wiki/Percent-encoding).
 - vts/vdt - UNIX Timestamp and datetime translations in ISO8601 format.
-- vgr - Grep wrapper for [ripgrep](https://github.com/BurntSushi/ripgrep).
+- vgrep - Grep wrapper for [ripgrep](https://github.com/BurntSushi/ripgrep).

@@ -31,3 +31,14 @@ def unknown_option():
 
 def from_to(src, dst):
     echo(f"`{src}` => `{dst}`")
+
+
+def get_input(msg):
+    return input(f"[vcmd] {msg}")
+
+
+def confirm(msg):
+    yes = get_input(msg)
+    if yes.lower().startswith("n"):
+        error("user not confirm, exit...")
+        exit(1)
