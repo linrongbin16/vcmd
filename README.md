@@ -2,6 +2,10 @@
 
 A command line utilities separated from [lin.vim](https://github.com/linrongbin16/lin.vim).
 
+# Dependency
+
+python3
+
 # Install
 
 ### For bash
