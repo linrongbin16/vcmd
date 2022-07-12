@@ -42,14 +42,14 @@ Example:
 \b
 ```
 $ venc -b Hello
-$ Hello => SGVsbG8=
+Hello => SGVsbG8=
 ```
 
 \b
 ```
 $ venv --base64 'Hello World' 'Goodbye World'
-$ Hello World => SGVsbG8gV29ybGQ=
-$ Goodbye World => SGVsbG8gV29ybGQ=
+Hello World => SGVsbG8gV29ybGQ=
+Goodbye World => SGVsbG8gV29ybGQ=
 ```
     """
     if len(args) == 0:

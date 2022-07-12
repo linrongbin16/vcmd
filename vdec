@@ -42,14 +42,14 @@ Example:
 \b
 ```
 $ vdec -b SGVsbG8gV29ybGQ=
-$ `SGVsbG8gV29ybGQ=` => `Hello World`
+`SGVsbG8gV29ybGQ=` => `Hello World`
 ```
 
 \b
 ```
 $ venv --base64 'SGVsbG8gV29ybGQ=' 'R29vZGJ5ZSBXb3JsZA=='
-$ `SGVsbG8gV29ybGQ=` => `Hello World`
-$ `R29vZGJ5ZSBXb3JsZA==` => `Goodbye World`
+`SGVsbG8gV29ybGQ=` => `Hello World`
+`R29vZGJ5ZSBXb3JsZA==` => `Goodbye World`
 ```
     """
     if len(args) == 0:
