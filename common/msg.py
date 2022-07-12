@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 # Copyright 2018- <linrongbin16@gmail.com>
 
+import sys
 import traceback
 
 
@@ -13,6 +14,16 @@ def debug(msg):
     print(f"[vcmd-debug] {msg}")
 
 
+def error(msg):
+    print(f"[vcmd] Error: {msg}")
+
+
 def exception(msg):
-    print(f"[vcmd-exception] {msg}")
+    print(f"[vcmd] Exception: {msg}")
     traceback.print_exc()
+
+
+def unknown_option():
+    echo(
+        f"Unknown option, please try `{sys.argv[0]} --help` for more information"
+    )
