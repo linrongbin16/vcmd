@@ -1,2 +1,8 @@
+# python3 cache
 __pycache__
+
+# python3 venv
+pyenv
+
+# vprx database
 proxy.db

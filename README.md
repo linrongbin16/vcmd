@@ -4,33 +4,46 @@ A command line utilities implemented by python3.
 
 Separated from [lin.vim](https://github.com/linrongbin16/lin.vim).
 
-# Dependency
-
-- [python3](https://www.python.org/)
-- Optional [pytz](https://pypi.org/project/pytz/) for datetime and timestamp commands: vts, vdt.
-- Optional [chardetect](https://pypi.org/project/chardet/) for file encoding commands: vfec.
-- Optional [ripgrep](https://github.com/BurntSushi/ripgrep) for grep commands: vgrep.
-- Optional [git](https://git-scm.com/) for git commands: vgpl, vgps, etc.
-- Optional [p7zip](http://p7zip.sourceforge.net/) (or [7-Zip](https://www.7-zip.org/download.html) on Windows) for compression commands: vzip, vunzip.
-- Optional [openssh](https://www.openssh.com/) for SSH commands: vsshgen.
-- Optional [cmake](https://cmake.org/) for language server protocol commands: vlsp.
-
 # Install
 
-### For bash
+### Dependencies
+
+The install script will install these softwares if not exists (by system package manager: apt/dnf/brew/pacman/etc):
+
+- [python3](https://www.python.org/)
+  - [pytz](https://pypi.org/project/pytz/) for datetime and timestamp commands (vts/vdt).
+  - [chardet](https://pypi.org/project/chardet/) for file encoding commands (vfec).
+- [ripgrep](https://github.com/BurntSushi/ripgrep) for grep commands (vgrep).
+- [git](https://git-scm.com/) for git commands (vgpl/vgps/etc).
+- [bzip2](https://www.sourceware.org/bzip2/), [unzip](https://linux.die.net/man/1/unzip), [p7zip](http://p7zip.sourceforge.net/) for compression commands (vzip/vunzip).
+  - For Windows: [bzip2 for windows](http://gnuwin32.sourceforge.net/packages/bzip2.htm), [unzip for Windows](http://gnuwin32.sourceforge.net/packages/unzip.htm), [7-zip](https://www.7-zip.org/download.html).
+- [openssh](https://www.openssh.com/) for SSH commands (vsshgen).
+- [cmake](https://cmake.org/) for language server protocol commands (vlsp).
+
+### For UNIX/Linux/MacOS
+
+Install [git](https://git-scm.com/) as a pre-request, additionally install [homebrew](https://brew.sh/) for MacOS.
 
 ```bash
-$ git clone https://github.com/linrongbin16/vcmd ~/.vcmd
-$ echo "[ -f ~/.vcmd/.vcmdrc ] && source ~/.vcmd/.vcmdrc " >> ~/.bashrc
+$ git clone https://github.com/linrongbin16/vcmd ~/.vcmd && bash ~/.vcmd/install
 ```
 
-### For other shells
+The install script will add `~/.vcmd/.vcmdrc` to `~/.bashrc` file.
+For other shells, manually add `[ -f ~/.vcmd/.vcmdrc ] && source ~/.vcmd/.vcmdrc` to local rc file, for example `~/.zshrc` on zsh.
 
-Please manually add `source ~/.vcmd/.vcmdrc` to local rc file if you're using other shell: zsh, fish, etc.
+### For Windows
 
-### For non-posix systems
-
-Please manually add `~/.vcmd` to environment variable **PATH**, for Windows it's `$env:Path`.
+1. Install [python3](https://www.python.org/downloads/).
+2. Install [64-bit Git for Windows Setup](https://git-scm.com/downloads) with these options (this will enable `git.exe` on environment variable `$env:Path`, with most linux shell commands such as `bash`, `cp`, `mv`, `cd`, etc):
+   1. In the 3rd step **_Select Components_**, enable **_Associate .sh files to be run with Bash_**
+   2. In the 7th step **_Adjusting your PATH environment_**, choose **_Use Git and optional Unix tools from the Command Prompt_**
+   3. In the 11th step **_Configuring the terminal emulator to use with Git Bash_**, choose **_Use Windows's default console window_**
+3. Run command: `git clone https://github.com/linrongbin16/vcmd ~/.vcmd && bash ~/.vcmd/install.ps1`.
+4. Manually add `$env:USERPROFILE/.vcmd` to environment variable `$env:Path`.
+5. Optionally install below for compression/extraction commands (vzip/vunzip):
+   - [bzip2 for windows](http://gnuwin32.sourceforge.net/packages/bzip2.htm).
+   - [unzip for Windows](http://gnuwin32.sourceforge.net/packages/unzip.htm).
+   - [7-zip](https://www.7-zip.org/download.html).
 
 # Introduction
 
@@ -55,6 +68,7 @@ Please manually add `~/.vcmd` to environment variable **PATH**, for Windows it's
 
 ### Interactively Git Operations
 
+- vgst - Git status.
 - vgpl - Git pull.
 - vgps - Git push.
 - vgbr - Git branch operations.
