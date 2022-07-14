@@ -26,9 +26,5 @@ def run(cmd):
     return out_lines, err_lines
 
 
-def cmd(cmd):
-    os.system(cmd)
-
-
 def str_empty(s):
     return s is None or len(s.strip()) == 0

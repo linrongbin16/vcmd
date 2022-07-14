@@ -11,9 +11,9 @@ Separated from [lin.vim](https://github.com/linrongbin16/lin.vim).
 The install script will install these softwares if not exists (by system package manager: apt/dnf/brew/pacman/etc):
 
 - [python3](https://www.python.org/)
+  - [click](https://click.palletsprojects.com/) command argument parsing.
   - [pytz](https://pypi.org/project/pytz/) for datetime and timestamp commands (vts/vdt).
   - [chardet](https://pypi.org/project/chardet/) for file encoding commands (vfec).
-- [ripgrep](https://github.com/BurntSushi/ripgrep) for grep commands (vgrep).
 - [git](https://git-scm.com/) for git commands (vgpl/vgps/etc).
 - [bzip2](https://www.sourceware.org/bzip2/), [unzip](https://linux.die.net/man/1/unzip), [p7zip](http://p7zip.sourceforge.net/) for compression commands (vzip/vunzip).
   - For Windows: [bzip2 for windows](http://gnuwin32.sourceforge.net/packages/bzip2.htm), [unzip for Windows](http://gnuwin32.sourceforge.net/packages/unzip.htm), [7-zip](https://www.7-zip.org/download.html).
@@ -61,10 +61,6 @@ For other shells, manually add `[ -f ~/.vcmd/.vcmdrc ] && source ~/.vcmd/.vcmdrc
 
 - vfec - File encoding operations such as detection and convertion.
 - vft - File operations by file types.
-
-### Grep
-
-- vgrep - Grep wrapper for [ripgrep](https://github.com/BurntSushi/ripgrep).
 
 ### Interactively Git Operations
 

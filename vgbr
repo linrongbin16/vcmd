@@ -3,6 +3,7 @@
 # Copyright 2018-  <linrongbin16@gmail.com>
 
 import sys
+import os
 import click
 
 sys.path.append(".")
@@ -25,17 +26,17 @@ def list_remote_branch(debug):
 
 def create_branch(name, debug):
     cgt.check_repo()
-    csys.cmd(f"git checkout -b {name}")
+    os.system(f"git checkout -b {name}")
 
 
 def switch_branch(name, debug):
     cgt.check_repo()
-    csys.cmd(f"git checkout {name}")
+    os.system(f"git checkout {name}")
 
 
 def delete_branch(name, debug):
     cgt.check_repo()
-    csys.cmd(f"git branch -d {name}")
+    os.system(f"git branch -d {name}")
 
 
 @click.command()

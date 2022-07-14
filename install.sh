@@ -34,14 +34,8 @@ case "$OS" in
         ;;
 esac
 
-cd ~/.vcmd
-if [ -d ~/.vcmd/pyenv ]; then
-    rm -rf ~/.vcmd/pyenv
-fi
-python3 -m venv ~/.vcmd/pyenv
-source ~/.vcmd/pyenv/bin/activate
-pip3 install --upgrade pytz
-pip3 install --upgrade chardet
-deactivate
+sudo pip3 install --upgrade click
+sudo pip3 install --upgrade pytz
+sudo pip3 install --upgrade chardet
 
 cargo install ripgrep
