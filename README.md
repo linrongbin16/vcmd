@@ -6,7 +6,7 @@ Separated from [lin.vim](https://github.com/linrongbin16/lin.vim).
 
 # Install
 
-### Dependencies
+#### Dependencies
 
 The install script will install these softwares if not exists (by system package manager: apt/dnf/brew/pacman/etc):
 
@@ -20,7 +20,7 @@ The install script will install these softwares if not exists (by system package
 - [openssh](https://www.openssh.com/) for SSH commands (vsshgen).
 - [cmake](https://cmake.org/) for language server protocol commands (vlsp).
 
-### For UNIX/Linux/MacOS
+#### For UNIX/Linux/MacOS
 
 Install [git](https://git-scm.com/) as a pre-request, additionally install [homebrew](https://brew.sh/) for MacOS.
 
@@ -31,7 +31,7 @@ $ git clone https://github.com/linrongbin16/vcmd ~/.vcmd && bash ~/.vcmd/install
 The install script will add `~/.vcmd/.vcmdrc` to `~/.bashrc` file.
 For other shells, manually add `[ -f ~/.vcmd/.vcmdrc ] && source ~/.vcmd/.vcmdrc` to local rc file, for example `~/.zshrc` on zsh.
 
-### For Windows
+#### For Windows
 
 1. Install [python3](https://www.python.org/downloads/).
 2. Install [64-bit Git for Windows Setup](https://git-scm.com/downloads) with these options (this will enable `git.exe` on environment variable `$env:Path`, with most linux shell commands such as `bash`, `cp`, `mv`, `cd`, etc):
@@ -47,53 +47,59 @@ For other shells, manually add `[ -f ~/.vcmd/.vcmdrc ] && source ~/.vcmd/.vcmdrc
 
 # Introduction
 
-### ls
+#### ls
 
 - l - Alias for `ls -lh --color=auto`, list items per line, exclude hidden items.
 - ll - Alias for `ls -lah --color=auto`, list items per line, include hidden items.
 
-### DateTime/Timestamp
+#### DateTime/Timestamp
 
-- vts - Convert ISO8601 format datetime to unix timestamp.
-- vdt - Convert unix timestamp to ISO8601 format datetime.
+- ts - Convert ISO8601 format datetime to unix timestamp.
+- dt - Convert unix timestamp to ISO8601 format datetime.
 
-### File Operations
+#### File Operations
 
-- vfec - File encoding operations such as detection and convertion.
-- vft - File operations by file types.
+- fec - File encoding operations such as detection and convertion.
+- fty - File operations by file types.
 
-### Interactively Git Operations
+#### Git Operations
 
-- vgst - Git status.
-- vgpl - Git pull.
-- vgps - Git push.
-- vgbr - Git branch operations.
-- vgdsc - Git discard.
-- vgrst - Git reset.
-- vgrvt - Git revert.
+- gs - Short for `git status`.
+- gp - Short for `git pull`.
+- gps - Short for `git push`.
+- gb - Short for `git branch`.
+- ga - Short for `git add`.
+- gc - Short for `git commit`.
+- gck - Short for `git checkout`.
+- grs - Short for `git reset`.
+- grv - Short for `git revert`.
 
-### Encode/Decode
+#### Search
 
-- venc - Encode with [base64](https://en.wikipedia.org/wiki/Base64) and [URL-encoding](https://en.wikipedia.org/wiki/Percent-encoding).
-- vdec - Decode with [base64](https://en.wikipedia.org/wiki/Base64) and [URL-encoding](https://en.wikipedia.org/wiki/Percent-encoding).
+- Suggest use [ripgrep](https://github.com/BurntSushi/ripgrep).
 
-### IP Address
+#### Encode/Decode
 
-- vip - IP Address validation and convertion.
+- ec - Encode with [base64](https://en.wikipedia.org/wiki/Base64) and [URL-encoding](https://en.wikipedia.org/wiki/Percent-encoding).
+- dc - Decode with [base64](https://en.wikipedia.org/wiki/Base64) and [URL-encoding](https://en.wikipedia.org/wiki/Percent-encoding).
 
-### Compression and Extraction
+#### IP Address
 
-- vzip - Compression.
-- vunzip - Extraction.
+- ip - IP Address validation and convertion.
 
-### Proxy
+#### Compression and Extraction
 
-- vprx - Proxy management tools for multiple OS platforms such as Linux/MacOS/Windows, also support git proxy.
+- cmpr - Compression.
+- extr - Extraction.
 
-### Language Service Protocol
+#### Proxy
 
-- vlsp - Generate files for [language server protocol](https://microsoft.github.io/language-server-protocol/) tools, such as [clangd](https://clangd.llvm.org/).
+- prx - Proxy management tools for multiple OS platforms such as Linux/MacOS/Windows, also support git proxy.
 
-### SSH Key Helper
+#### Language Service Protocol
+
+- lsp - Generate files for [language server protocol](https://microsoft.github.io/language-server-protocol/) tools, such as [clangd](https://clangd.llvm.org/).
+
+#### SSH Key Helper
 
 - vsshgen - Generate SSH Keys.

@@ -1,0 +1,201 @@
+#! /usr/bin/env python3
+# -*- coding:utf-8 -*-
+# Copyright 2018-  <linrongbin16@gmail.com>
+
+import sys
+import os
+import time
+import shutil
+import click
+
+sys.path.append(".")
+import common.msg as cmsg
+import common.sys as csys
+import common.fs as cfs
+
+
+def get_header(s):
+    return f'-I"{s}"' if csys.is_Windows() else f"-I{s}"
+
+
+def os_listdir_try(d):
+    try:
+        return os.listdir(d)
+    except:
+        return []
+
+
+def git_header():
+    try:
+        root, _ = csys.run("git rev-parse --show-toplevel")
+        root = root[0].strip()
+        dirs = cfs.list_dirs(root, depth=3)
+        return [get_header(d) for d in dirs]
+    except:
+        return []
+
+
+def windows_sdk_header(debug):
+    results = []
+
+    try:
+        # example:
+        # -I"C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\VC\\Tools\\MSVC\\14.14.26428\\include"
+        vs_releases = [
+            r for r in os_listdir_try(
+                "C:\\Program Files (x86)\\Microsoft Visual Studio\\")
+            if cfs.valid_dir(r)
+        ]
+        if debug:
+            cmsg.debug(f"Microsoft Visual Studio Releases:{vs_releases}")
+        vs_versions = [
+            get_header(v) for r in vs_releases for v in os_listdir_try(r)
+            if cfs.valid_dir(v)
+        ]
+        if debug:
+            cmsg.debug(f"Microsoft Visual Studio Versions:{vs_versions}")
+        results.extend(vs_versions)
+    except:
+        if debug:
+            cmsg.exception(
+                f"`C:\\Program Files (x86)\\Microsoft Visual Studio\\` not exist"
+            )
+
+    try:
+        # example:
+        # -I"C:\\Program Files (x86)\\Windows Kits\\10\\Include\\10.0.17134.0\\ucrt"
+        sdk_versions = [
+            get_header(v) for v in os_listdir_try(
+                "C:\\Program Files (x86)\\Windows Kits\\10\\Include\\")
+            if cfs.valid_dir(v)
+        ]
+        if debug:
+            cmsg.debug(f"Windows SDK Versions:{sdk_versions}")
+        results.extend(sdk_versions)
+    except:
+        if debug:
+            cmsg.exception(
+                f"`C:\\Program Files (x86)\\Windows Kits\\10\\Include\\` not exist"
+            )
+
+    try:
+        # C:\\Program Files\\LLVM headers
+        llvm_dirs = [
+            "C:\\Program Files\\LLVM\\include\\clang-c",
+            "C:\\Program Files\\LLVM\\include\\llvm",
+            "C:\\Program Files\\LLVM\\include\\llvm-c",
+        ]
+        llvm_dirs = [get_header(d) for d in llvm_dirs if cfs.valid_dir(d)]
+        results.extend(llvm_dirs)
+    except:
+        if debug:
+            cmsg.exception(f"`C:\\Program Files\\LLVM\\include` not found")
+
+    return results
+
+
+def current_directory_header():
+    results = []
+    results.append(get_header("."))
+    results.extend([get_header(f) for f in cfs.list_files(".", depth=3)])
+    return results
+
+
+def compile_commands(debug):
+    cmsg.echo("Generate `compile_commands.json`")
+    gen_dir = f".vconf.{str(time.time())}"
+    os.system(f"cmake -B {gen_dir} -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .")
+    if not os.path.exists(f"{gen_dir}/compile_commands.json"):
+        raise RuntimeError(
+            f"Failed to generate `{gen_dir}/compile_commands.json`")
+    shutil.copyfile(f"{gen_dir}/compile_commands.json",
+                    "compile_commands.json")
+    shutil.rmtree(gen_dir, ignore_errors=True)
+    cmsg.echo("Generate `compile_commands.json` - done")
+
+
+def compile_flags(debug):
+    cmsg.echo("Generate `compile_flags.txt`")
+    fp = open("compile_flags.txt", "w")
+    headers = current_directory_header()
+    if debug:
+        cmsg.debug(f"Current directory header:{headers}")
+    for h in headers:
+        fp.write(f"{h}\n")
+    headers = windows_sdk_header(debug)
+    if debug:
+        cmsg.debug(f"Windows SDK header:{headers}")
+    for h in headers:
+        fp.write(f"{h}\n")
+    headers = git_header()
+    if debug:
+        cmsg.debug(f"Git repository header:{headers}")
+    for h in headers:
+        fp.write(f"{h}\n")
+    fp.close()
+    cmsg.echo("Generate `compile_flags.txt` - done")
+
+
+def generate_for_clangd(debug):
+    is_win = csys.is_Windows()
+    has_cmakelists_txt = cfs.valid_file("CMakeLists.txt")
+    cmsg.echo(f"Is Windows OS: {is_win}")
+    cmsg.echo(f"`CMakeLists.txt` exists: {has_cmakelists_txt}")
+    if not is_win and has_cmakelists_txt:
+        compile_commands(debug)
+    else:
+        compile_flags(debug)
+
+
+@click.command()
+@click.option(
+    "-c",
+    "--clangd",
+    is_flag=True,
+    help="Generate `compile_commands.json` or `compile_flags.txt` for clangd",
+)
+@click.option("--debug", is_flag=True, help="debug mode")
+def lsp(clangd, debug):
+    """
+Language Server Protocol Tool
+
+Example:
+
+\b
+```
+$ lsp -c
+[vcmd] Is Windows OS: False
+[vcmd] `CMakeLists.txt` exists: True
+[vcmd] Generate `compile_commands.json`
+-- The CXX compiler identification is AppleClang 12.0.0.12000032
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+CMAKE_BUILD_TYPE:
+-- Found PkgConfig: /usr/local/bin/pkg-config (found version "0.29.2")
+-- Looking for C++ include pthread.h
+-- Looking for C++ include pthread.h - found
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Found Python: /usr/local/Frameworks/Python.framework/Versions/3.9/bin/python3.9 (found version "3.9.10") found components: Interpreter Development Development.Module Development.Embed
+-- Checking for module 'jemalloc'
+--   Found jemalloc, version 5.2.1_0
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/linrongbin16/workspace/github/hello-cpp/.lsp.1644556264.228266
+[vcmd] Generate `compile_commands.json` - done
+```
+    """
+    if debug:
+        cmsg.debug(f"clangd:{clangd}, debug:{debug}")
+    if clangd:
+        generate_for_clangd(debug)
+    else:
+        cmsg.unknown_option()
+
+
+if __name__ == '__main__':
+    lsp()
