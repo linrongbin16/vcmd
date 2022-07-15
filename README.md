@@ -64,12 +64,12 @@ For other shells, manually add `[ -f ~/.vcmd/.vcmdrc ] && source ~/.vcmd/.vcmdrc
 
 #### Git Operations
 
-- gs - Short for `git status`.
-- gp - Short for `git pull`.
+- gst - Short for `git status`.
+- gpl - Short for `git pull`.
 - gps - Short for `git push`.
-- gb - Short for `git branch`.
-- ga - Short for `git add`.
-- gc - Short for `git commit`.
+- gbr - Short for `git branch`.
+- gad - Short for `git add`.
+- gcm - Short for `git commit`.
 - gck - Short for `git checkout`.
 - grs - Short for `git reset`.
 - grv - Short for `git revert`.
