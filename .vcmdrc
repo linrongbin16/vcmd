@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 # better ls
 alias l="ls -lh --color=auto"
@@ -12,7 +12,7 @@ export LANGUAGE='en_US.UTF-8'
 export LANG="en_US.UTF-8"
 
 # dotfiles home
-export PATH=~/.dotfiles:$PATH
+export PATH=~/.vcmd:$PATH
 
 # rust
 export RUST_BACKTRACE=1
