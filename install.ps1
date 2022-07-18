@@ -1,8 +1,8 @@
 #Requires -RunAsAdministrator
 # Copyright 2018- <linrongbin16@gmail.com>
 
-pip3 install --upgrade click
-pip3 install --upgrade pytz
-pip3 install --upgrade chardet
+# pip packages
+pip3 install --upgrade click pytz chardet
 
+# cargo commands
 cargo install ripgrep

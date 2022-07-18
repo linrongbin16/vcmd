@@ -60,7 +60,7 @@ def list_timezone(args, debug):
 )
 @click.option("--debug", is_flag=True, help="debug mode")
 @click.argument("args", nargs=-1)
-def dt(tz, tz_list, args, debug):
+def vdt(tz, tz_list, args, debug):
     """
 Parse unix epoch timestamp to ISO8601 format datetime, by default print now.
 
@@ -79,15 +79,15 @@ Example:
 
 \b
 ```
-$ dt
+$ vdt
 [vcmd] `now(2022-07-12 17:06:39.294310)` => `2022-07-12T17:06:39.294310+08:00`
-$ dt 1657616831.175318
+$ vdt 1657616831.175318
 [vcmd] `1657616831.17532` => `2022-07-12T17:07:11.175320+08:00`
-$ dt 1657616831.175318 --tz UTC
+$ vdt 1657616831.175318 --tz UTC
 [vcmd] `1657616831.17532` => `2022-07-12T09:07:11.175320+00:00`
-$ dt 1657616831.175318 --tz US/Pacific
+$ vdt 1657616831.175318 --tz US/Pacific
 [vcmd] `1657616831.17532` => `2022-07-12T02:07:11.175320-07:00`
-$ dt -l shanghai
+$ vdt -l shanghai
 [vcmd] Asia/Shanghai
 ```
     """
@@ -100,4 +100,4 @@ $ dt -l shanghai
 
 
 if __name__ == "__main__":
-    dt()
+    vdt()

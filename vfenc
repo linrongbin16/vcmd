@@ -75,7 +75,7 @@ def show_fec(files):
               help="Convert file encoding to target encoding")
 @click.argument("args", nargs=-1)
 @click.option("--debug", is_flag=True, help="debug mode")
-def fec(show_encoding, convert_encoding, args, debug):
+def vfenc(show_encoding, convert_encoding, args, debug):
     """
 File encoding operations.
 
@@ -83,11 +83,11 @@ Example:
 
 \b
 ```
-$ fec -s test.log
+$ vfenc -s test.log
 test.log: ascii
 
 \b
-$ fec -s
+$ vfenc -s
 [vcmd] l.bat: ascii
 [vcmd] LICENSE: ascii
 [vcmd] ll.bat: ascii
@@ -97,8 +97,8 @@ $ fec -s
 [vcmd] vdec.bat: ascii
 [vcmd] venc: ascii
 [vcmd] venc.bat: ascii
-[vcmd] fec: ascii
-[vcmd] fec.bat: None
+[vcmd] vfenc: ascii
+[vcmd] vfenc.bat: None
 [vcmd] vft: ascii
 [vcmd] vft.bat: ascii
 [vcmd] vgit: ascii
@@ -136,4 +136,4 @@ $ fec -s
 
 
 if __name__ == "__main__":
-    fec()
+    vfenc()

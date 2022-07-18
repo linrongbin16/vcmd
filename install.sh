@@ -34,8 +34,8 @@ case "$OS" in
         ;;
 esac
 
-sudo pip3 install --upgrade click
-sudo pip3 install --upgrade pytz
-sudo pip3 install --upgrade chardet
+# pip packages
+sudo pip3 install --upgrade click pytz chardet
 
+# cargo commands
 cargo install ripgrep

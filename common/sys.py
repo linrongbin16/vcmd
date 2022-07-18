@@ -4,7 +4,6 @@
 
 import platform
 import subprocess
-import os
 
 
 def is_Windows():
@@ -24,7 +23,3 @@ def run(cmd):
     out_lines = [x.decode() for x in out_bytes if len(x) > 0]
     err_lines = [x.decode() for x in err_bytes if len(x) > 0]
     return out_lines, err_lines
-
-
-def str_empty(s):
-    return s is None or len(s.strip()) == 0

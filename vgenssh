@@ -16,7 +16,7 @@ import common.msg as cmsg
               required=True,
               help="Email address to generate the SSH Key")
 @click.option("--debug", is_flag=True, help="debug mode")
-def genssh(email, debug):
+def vgenssh(email, debug):
     """
 SSH Key Generator
 
@@ -43,4 +43,4 @@ $ chmod 600 ~/.ssh/id_rsa.pub
 
 
 if __name__ == '__main__':
-    genssh()
+    vgenssh()

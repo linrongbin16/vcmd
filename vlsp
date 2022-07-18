@@ -155,7 +155,7 @@ def generate_for_clangd(debug):
     help="Generate `compile_commands.json` or `compile_flags.txt` for clangd",
 )
 @click.option("--debug", is_flag=True, help="debug mode")
-def lsp(clangd, debug):
+def vlsp(clangd, debug):
     """
 Language Server Protocol Tool
 
@@ -163,7 +163,7 @@ Example:
 
 \b
 ```
-$ lsp -c
+$ vlsp -c
 [vcmd] Is Windows OS: False
 [vcmd] `CMakeLists.txt` exists: True
 [vcmd] Generate `compile_commands.json`
@@ -185,7 +185,7 @@ CMAKE_BUILD_TYPE:
 --   Found jemalloc, version 5.2.1_0
 -- Configuring done
 -- Generating done
--- Build files have been written to: /Users/linrongbin16/workspace/github/hello-cpp/.lsp.1644556264.228266
+-- Build files have been written to: /Users/linrongbin16/workspace/github/hello-cpp/.vlsp.1644556264.228266
 [vcmd] Generate `compile_commands.json` - done
 ```
     """
@@ -198,4 +198,4 @@ CMAKE_BUILD_TYPE:
 
 
 if __name__ == '__main__':
-    lsp()
+    vlsp()

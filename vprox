@@ -1,0 +1,263 @@
+#! /usr/bin/env python3
+# -*- coding:utf-8 -*-
+# Copyright 2018-  <linrongbin16@gmail.com>
+
+import sys
+import os
+import click
+
+sys.path.append(".")
+import common.msg as cmsg
+import common.sys as csys
+import common.fs as cfs
+import common.util as cutil
+
+SS = "\\" if csys.is_Windows() else "/"
+HOME = os.path.expanduser('~')
+DB = f"{HOME}{SS}.vcmd{SS}proxy.db"
+GIT_CONFIG = f"{HOME}{SS}.gitconfig"
+
+
+def add_proxy(args, debug):
+    if debug:
+        cmsg.debug(f"add proxy:{args}")
+    if len(args) != 1:
+        cmsg.error("proxy must in `name=protocol://ip:port` format")
+        return
+    if not args[0]:
+        cmsg.error("proxy must in `name=protocol://ip:port` format")
+        return
+    if args[0].strip().find('=') < 0:
+        cmsg.error("proxy must in `name=protocol://ip:port` format")
+        return
+    cfs.append_file(DB, f"{args[0]}\n")
+    cmsg.echo(f"add proxy: {args[0]} - done")
+
+
+def erase_proxy(name, debug):
+    if debug:
+        cmsg.debug(f"remove proxy:{name}")
+    proxies = cfs.read_file_by_lines(DB)
+    proxies = [p.strip() for p in proxies if p and len(p.strip()) > 0]
+    saved = []
+    for p in proxies:
+        if p.strip().startswith(name):
+            cmsg.echo(f"remove proxy: {p.strip()} - done")
+            continue
+        saved.append(p.strip() + "\n")
+    cfs.write_file(DB, saved)
+
+
+def list_proxies(debug):
+    proxies = cfs.read_file_by_lines(DB)
+    if debug:
+        cmsg.debug(f"{DB}:{proxies}")
+    proxies = [p.strip() for p in proxies if p and len(p.strip()) > 0]
+    if proxies and len(proxies) > 0:
+        cmsg.echo("stored ip proxy:")
+        for i, p in enumerate(proxies):
+            cmsg.echo(f"  {i} - {p.strip()}")
+    else:
+        cmsg.echo("stored ip proxy - empty")
+
+
+def show_git_proxy(debug):
+    configs = cfs.read_file_by_lines(GIT_CONFIG)
+    if debug:
+        print(f"{GIT_CONFIG}:{configs}")
+    current = None
+    title = None
+    proxies = []
+    if configs:
+        for i, line in enumerate(configs):
+            current = line.strip()
+            if debug:
+                cmsg.debug(
+                    f"the {i}-th line:{current}, title:{title}, start with proxy:{current.startswith('proxy')}"
+                )
+            if len(current) == 0:
+                continue
+            if current.startswith("[") and current.endswith("]"):
+                title = current
+            elif current.startswith("proxy") and isinstance(
+                    title, str) and title.lower().startswith("[http"):
+                proxies.append(f"{title}={current.split('=')[-1].strip()}")
+    if len(proxies) > 0:
+        cmsg.echo(f"git proxy:")
+        for i, p in enumerate(proxies):
+            cmsg.echo(f"  {i} - {p}")
+    else:
+        cmsg.echo("git proxy - empty")
+
+
+def show_environment_proxy(debug):
+    cmsg.echo(f"environment proxy (windows:{csys.is_Windows()}):")
+    http_key = 'HTTP_PROXY' if csys.is_Windows() else 'http_proxy'
+    https_key = 'HTTPS_PROXY' if csys.is_Windows() else 'https_proxy'
+    http_value = os.environ[http_key] if http_key in os.environ else None
+    https_value = os.environ[https_key] if https_key in os.environ else None
+    if csys.is_Windows():
+        cmsg.echo(f"  0 - %{http_key}%: {http_value}")
+        cmsg.echo(f"  1 - %{https_key}%: {https_value}")
+    else:
+        cmsg.echo(f"  0 - ${http_key}: {http_value}")
+        cmsg.echo(f"  1 - ${https_key}: {https_value}")
+
+
+def show_proxy(debug):
+    show_git_proxy(debug)
+    show_environment_proxy(debug)
+
+
+def reset_git_proxy():
+    os.system("git config --global --unset https.proxy")
+    os.system("git config --global --unset http.proxy")
+    cmsg.echo("reset proxy for ~/.gitconfig - done")
+
+
+def find_proxy_by_name(name, debug):
+    proxies = cfs.read_file_by_lines(DB)
+    if debug:
+        cmsg.debug(f"{DB}:{proxies}")
+    proxies = [p.strip() for p in proxies if p and len(p.strip()) > 0]
+    if proxies:
+        for p in proxies:
+            ps = [x.strip() for x in p.split("=")]
+            if ps[0] == name.strip():
+                return ps
+    return None
+
+
+def set_git_proxy(name, debug):
+    proxy = find_proxy_by_name(name, debug)
+    if not proxy:
+        cmsg.error(f"proxy \'{name}\' not found, exit...")
+        return
+    os.system("git config --global --unset https.proxy")
+    os.system("git config --global --unset http.proxy")
+    http_cmd = f"git config --global http.proxy {proxy[1]}"
+    https_cmd = f"git config --global https.proxy {proxy[1]}"
+    os.system(http_cmd)
+    os.system(https_cmd)
+    cmsg.echo(f"use proxy:{proxy[0]}={proxy[1]} for ~/.gitconfig - done")
+
+
+def clear_proxy():
+    cfs.purge_file(DB)
+
+
+def print_shell_proxy_hint(name, debug):
+    proxy = find_proxy_by_name(name, debug)
+    if not proxy:
+        cmsg.error(f"proxy \'{name}\' not found, exit...")
+        return
+    cmsg.echo("print proxy hint for *nix shell:")
+    cmsg.echo(f"export http_proxy={proxy[1]} https_proxy={proxy[1]}")
+
+
+def print_powershell_proxy_hint(name, debug):
+    proxy = find_proxy_by_name(name, debug)
+    if proxy is None or len(proxy) == 0:
+        print(f"[vcmd] ip proxy:{name} not found, exit...")
+        return
+    cmsg.echo("print proxy hint for windows powershell:")
+    cmsg.echo(f"$env:HTTP_PROXY=\"{proxy[1]}\"")
+    cmsg.echo(f"$env:HTTPS_PROXY=\"{proxy[1]}\"")
+
+
+def print_cmd_proxy(name, debug):
+    proxy = find_proxy_by_name(name, debug)
+    if proxy is None or len(proxy) == 0:
+        print(f"[vcmd] ip proxy:{name} not found, exit...")
+        return
+    cmsg.echo("print proxy hint for windows command prompt:")
+    cmsg.echo(f"set HTTP_PROXY=\"{proxy[1]}\"")
+    cmsg.echo(f"set HTTPS_PROXY=\"{proxy[1]}\"")
+
+
+@click.command()
+@click.option("-a",
+              "--add",
+              is_flag=True,
+              help="add proxy in `name=protocol://domain:port` format")
+@click.option("-l",
+              "--list",
+              "list_arg",
+              is_flag=True,
+              help="list all proxies")
+@click.option("--show", is_flag=True, help="show current environment proxies")
+@click.option("--clear", is_flag=True, help="clear all proxies")
+@click.option("-e", "--erase", help="erase proxy by name")
+@click.option("-s", "--set-git", 'set_git', help="set git proxy")
+@click.option("-r",
+              "--reset-git",
+              'reset_git',
+              is_flag=True,
+              help="reset/clear git proxy")
+@click.option("--shell", help="print linux shell proxy environment")
+@click.option("--powershell",
+              help="print windows powershell proxy environment")
+@click.option("--cmd", help="print windows cmd proxy environment")
+@click.option("--debug", is_flag=True, help="debug mode")
+@click.argument("args", nargs=-1)
+def vproxy(add, list_arg, show, erase, clear, set_git, reset_git, shell,
+           powershell, cmd, debug, args):
+    """
+Proxy management
+
+\b
+You could first store some proxy configurations by `vprox -a` in `name=protocol://domain:port` format.
+
+\b
+Then switch git proxy by `vprox -s` with configured proxy name, or print environment proxy setting hints, or list/delete them.
+
+Example:
+
+\b
+```
+$ vprox -a test=socks5://127.0.0.1:7890
+[vcmd] add proxy: test=socks5://127.0.0.1:7890 - done
+$ vprox -l
+[vcmd] stored ip proxy:
+[vcmd]   0 - test=socks5://127.0.0.1:7890
+$ vprox -s test
+[vcmd] use proxy:test=socks5://127.0.0.1:7890 for ~/.gitconfig - done
+$ tail -n 4 ~/.gitconfig
+[http]
+        proxy = socks5://127.0.0.1:7890
+[https]
+        proxy = socks5://127.0.0.1:7890
+$ vprox -r
+[vcmd] reset proxy for ~/.gitconfig - done
+```
+     """
+    if debug:
+        print(
+            f"add:{add}, list_arg:{list_arg}, show:{show}, erase:{erase}, clear:{clear}, set_git:{set_git}, reset_git:{reset_git}, shell:{shell}, powershell:{powershell}, cmd:{cmd}, args:{args}, type:{type(args)}"
+        )
+    if add:
+        add_proxy(args, debug)
+    elif list_arg:
+        list_proxies(debug)
+    elif show:
+        show_proxy(debug)
+    elif clear:
+        clear_proxy()
+    elif erase:
+        erase_proxy(erase, debug)
+    elif set_git:
+        set_git_proxy(set_git, debug)
+    elif reset_git:
+        reset_git_proxy()
+    elif shell:
+        print_shell_proxy_hint(shell, debug)
+    elif powershell:
+        print_powershell_proxy_hint(powershell, debug)
+    elif cmd:
+        print_cmd_proxy(cmd, debug)
+    else:
+        cmsg.unknown_option()
+
+
+if __name__ == "__main__":
+    vproxy()

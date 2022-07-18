@@ -11,41 +11,41 @@ sys.path.append(".")
 import common.msg as cmsg
 
 
-def encode_base64(s):
+def decode_base64(s):
     b = s.encode("UTF-8")
-    b = base64.b64encode(b)
+    b = base64.b64decode(b)
     cmsg.from_to(s, b.decode('UTF-8'))
 
 
-def encode_url(s):
-    cmsg.from_to(s, parse.quote(s))
+def decode_url(s):
+    cmsg.from_to(s, parse.unquote(s))
 
 
 @click.command()
-@click.option("-b", "--base64", is_flag=True, help="Encode text with base64")
+@click.option("-b", "--base64", is_flag=True, help="Decode text with base64")
 @click.option("-u",
               "--url",
               is_flag=True,
-              help="Encode text with URL-encoding(percent-encoding) method")
+              help="Decode text with URL-decoding(percent-decoding) method")
 @click.argument("args", nargs=-1)
 @click.option("--debug", is_flag=True, help="debug mode")
-def ecode(base64, url, args, debug):
+def vdec(base64, url, args, debug):
     """
-Encode text with base64/URL encoding algorithm.
+Decode text with base64/URL decoding algorithm.
 
 Example:
 
 \b
 ```
-$ ec -b Hello
-Hello => SGVsbG8=
+$ vdec -b SGVsbG8gV29ybGQ=
+`SGVsbG8gV29ybGQ=` => `Hello World`
 ```
 
 \b
 ```
-$ venv --base64 'Hello World' 'Goodbye World'
-Hello World => SGVsbG8gV29ybGQ=
-Goodbye World => SGVsbG8gV29ybGQ=
+$ venv --base64 'SGVsbG8gV29ybGQ=' 'R29vZGJ5ZSBXb3JsZA=='
+`SGVsbG8gV29ybGQ=` => `Hello World`
+`R29vZGJ5ZSBXb3JsZA==` => `Goodbye World`
 ```
     """
     if len(args) == 0:
@@ -53,13 +53,13 @@ Goodbye World => SGVsbG8gV29ybGQ=
         exit(1)
     if base64:
         for a in args:
-            encode_base64(a)
+            decode_base64(a)
     elif url:
         for a in args:
-            encode_url(a)
+            decode_url(a)
     else:
         cmsg.unknown_option()
 
 
 if __name__ == "__main__":
-    ecode()
+    vdec()
