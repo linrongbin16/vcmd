@@ -2,6 +2,7 @@
 # Copyright 2018- <linrongbin16@gmail.com>
 
 INSTALL=~/.vcmd/install
+OS="$(uname -s)"
 
 case "$OS" in
     Linux)
@@ -39,3 +40,6 @@ sudo pip3 install --upgrade click pytz chardet
 
 # cargo commands
 cargo install ripgrep
+
+# environment path
+echo "export PATH=~/.vcmd:\$PATH" >> ~/.bashrc
