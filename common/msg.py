@@ -41,4 +41,5 @@ def confirm(msg):
     yes = get_input(msg)
     if yes.lower().startswith("n"):
         error("user not confirm, exit...")
-        exit(1)
+        return False
+    return True

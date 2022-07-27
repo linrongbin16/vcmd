@@ -56,13 +56,16 @@ def valid_file(f):
 
 
 def backup(src):
+    import common.msg as cmsg
+
     if not os.path.exists(src):
         return
     dst = f"{src}.{datetime.datetime.now().strftime('%Y_%m_%d_%H_%M_%S')}"
-    os.rename(src, dst)
-
-    import common.msg as cmsg
-    cmsg.echo(f"Backup from {src} to {dst}")
+    if cmsg.confirm(
+            f"'{src}' already exist, move it to {dst} [y(es) - move, n(o) - overwrite]?"
+    ):
+        os.rename(src, dst)
+        cmsg.echo(f"Backup from {src} to {dst}")
 
 
 def read_file(name):

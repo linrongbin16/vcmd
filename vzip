@@ -1,0 +1,102 @@
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+# Copyright 2018-  <linrongbin16@gmail.com>
+
+import sys
+import os
+import click
+
+sys.path.append(".")
+import common.msg as cmsg
+import common.fs as cfs
+import common.sys as csys
+
+
+def compress_target(filename, option):
+    if option == "targz" or option == "tgz":
+        target = "%s.tar.gz" % filename
+        util.backup_file(target)
+        os.system('tar czvf "%s" "%s"' % (target, filename))
+    elif option == "tarbz2":
+        target = "%s.tar.bz2" % filename
+        util.backup_file(target)
+        os.system('tar czvf "%s" "%s"' % (target, filename))
+    elif option == "tar":
+        target = "%s.tar" % filename
+        util.backup_file(target)
+        os.system('tar cvf "%s" "%s"' % (target, filename))
+    elif option == "zip":
+        target = "%s.zip" % filename
+        util.backup_file(target)
+        os.system('zip -r "%s" "%s"' % (target, filename))
+    else:
+        print("[vcmd] compress filetype:%s is not support, exit..." % (option))
+
+
+# for tar.gz, tgz, tar.bz2
+def compress_tar_x(targets, extension, debug):
+    if debug:
+        cmsg.debug(f"compress x.{extension} for: {targets}")
+    for src in targets:
+        dst = f"{src}.{extension}"
+        cfs.backup(dst)
+        os.system(f'tar czf "{dst}" "{src}"')
+        cmsg.echo(f"compressed {dst} - done")
+
+
+@click.command()
+@click.option("--tar-gz", is_flag=True, help="output x.tar.gz")
+@click.option("--tgz", is_flag=True, help="output x.tgz")
+@click.option("--tar-bz2", is_flag=True, help="output x.tar.bz2")
+@click.option("--tar", is_flag=True, help="onyl package and output x.tar")
+@click.option("--zip", "zip_arg", is_flag=True, help="output x.zip")
+@click.option("--7z", "p7zip_arg", is_flag=True, help="output x.7z")
+@click.option("--debug", is_flag=True, help="debug mode")
+@click.argument("args", nargs=-1)
+def vzip(tar_gz, tgz, tar_bz2, tar, zip_arg, p7zip_arg, debug, args):
+    """
+File and directory compression with multiple file extensions.
+
+Example:
+
+\b
+$ vzip -e date-3.0.1.tar.gz
+x date-3.0.1/
+x date-3.0.1/.gitignore
+x date-3.0.1/.travis.yml
+x date-3.0.1/CMakeLists.txt
+x date-3.0.1/LICENSE.txt
+x date-3.0.1/README.md
+x date-3.0.1/ci/
+x date-3.0.1/ci/install_cmake.sh
+x date-3.0.1/cmake/
+x date-3.0.1/cmake/dateConfig.cmake
+x date-3.0.1/compile_fail.sh
+x date-3.0.1/include/
+x date-3.0.1/include/date/
+x date-3.0.1/include/date/chrono_io.h
+x date-3.0.1/include/date/date.h
+...
+"""
+    if debug:
+        cmsg.debug(
+            f"tar_gz:{tar_gz}, tgz:{tgz}, tar_bz2:{tar_bz2}, tar:{tar}, zip:{zip_arg}, 7z:{p7zip_arg}, debug:{debug}, args:{args}"
+        )
+    if len(args) == 0:
+        cmsg.error("input file/directory missing")
+        exit(1)
+    if tar_gz or tgz or tar_bz2:
+        extension = None
+        if tar_gz:
+            extension = "tar.gz"
+        elif tgz:
+            extension = "tgz"
+        elif tar_bz2:
+            extension = "tar.bz2"
+        compress_tar_x(args, extension, debug)
+    else:
+        cmsg.unknown_option()
+
+
+if __name__ == "__main__":
+    vzip()
