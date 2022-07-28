@@ -34,7 +34,7 @@ def add_proxy(args, debug):
     cmsg.echo(f"add proxy: {args[0]} - done")
 
 
-def erase_proxy(name, debug):
+def remove_proxy(name, debug):
     if debug:
         cmsg.debug(f"remove proxy:{name}")
     proxies = cfs.read_file_by_lines(DB)
@@ -146,31 +146,35 @@ def clear_proxy():
     cfs.purge_file(DB)
 
 
-def print_shell_proxy_hint(name, debug):
+def print_bash_proxy_hint(name, debug):
     proxy = find_proxy_by_name(name, debug)
     if not proxy:
         cmsg.error(f"proxy \'{name}\' not found, exit...")
         return
-    cmsg.echo("print proxy hint for *nix shell:")
+    cmsg.echo("print command to setup environment variables for a linux bash:")
     cmsg.echo(f"export http_proxy={proxy[1]} https_proxy={proxy[1]}")
 
 
-def print_powershell_proxy_hint(name, debug):
+def print_pwsh_proxy_hint(name, debug):
     proxy = find_proxy_by_name(name, debug)
     if proxy is None or len(proxy) == 0:
         print(f"[vcmd] ip proxy:{name} not found, exit...")
         return
-    cmsg.echo("print proxy hint for windows powershell:")
+    cmsg.echo(
+        "print command to setup environment variables for a windows powershell:"
+    )
     cmsg.echo(f"$env:HTTP_PROXY=\"{proxy[1]}\"")
     cmsg.echo(f"$env:HTTPS_PROXY=\"{proxy[1]}\"")
 
 
-def print_cmd_proxy(name, debug):
+def print_cmd_proxy_hint(name, debug):
     proxy = find_proxy_by_name(name, debug)
     if proxy is None or len(proxy) == 0:
         print(f"[vcmd] ip proxy:{name} not found, exit...")
         return
-    cmsg.echo("print proxy hint for windows command prompt:")
+    cmsg.echo(
+        "print command to setup environment variables for a windows command prompt:"
+    )
     cmsg.echo(f"set HTTP_PROXY=\"{proxy[1]}\"")
     cmsg.echo(f"set HTTPS_PROXY=\"{proxy[1]}\"")
 
@@ -185,23 +189,28 @@ def print_cmd_proxy(name, debug):
               "list_arg",
               is_flag=True,
               help="list all proxies")
-@click.option("--show", is_flag=True, help="show current environment proxies")
-@click.option("--clear", is_flag=True, help="clear all proxies")
-@click.option("-e", "--erase", help="erase proxy by name")
-@click.option("-s", "--set-git", 'set_git', help="set git proxy")
-@click.option("-r",
-              "--reset-git",
-              'reset_git',
+@click.option("-s",
+              "--show",
               is_flag=True,
-              help="reset/clear git proxy")
-@click.option("--shell", help="print linux shell proxy environment")
-@click.option("--powershell",
-              help="print windows powershell proxy environment")
-@click.option("--cmd", help="print windows cmd proxy environment")
+              help="show current environment proxies")
+@click.option("-c", "--clear", is_flag=True, help="clear all proxies")
+@click.option("-r", "--remove", help="remove proxy by name")
+@click.option("--set-git", help="set git proxy")
+@click.option("--reset-git", is_flag=True, help="reset/clear git proxy")
+@click.option("--bash",
+              help="print command to set environment variables on a linux bash"
+              )
+@click.option(
+    "--pwsh",
+    help="print command to set environment variables on a windows powershell")
+@click.option(
+    "--cmd",
+    help="print command to set environment variables on a windows command prompt"
+)
 @click.option("--debug", is_flag=True, help="debug mode")
 @click.argument("args", nargs=-1)
-def vproxy(add, list_arg, show, erase, clear, set_git, reset_git, shell,
-           powershell, cmd, debug, args):
+def vproxy(add, list_arg, show, remove, clear, set_git, reset_git, bash, pwsh,
+           cmd, debug, args):
     """
 Proxy management
 
@@ -233,7 +242,7 @@ $ vprox -r
      """
     if debug:
         print(
-            f"add:{add}, list_arg:{list_arg}, show:{show}, erase:{erase}, clear:{clear}, set_git:{set_git}, reset_git:{reset_git}, shell:{shell}, powershell:{powershell}, cmd:{cmd}, args:{args}, type:{type(args)}"
+            f"add:{add}, list_arg:{list_arg}, show:{show}, remove:{remove}, clear:{clear}, set_git:{set_git}, reset_git:{reset_git}, bash:{bash}, pwsh:{pwsh}, cmd:{cmd}, args:{args}, type:{type(args)}"
         )
     if add:
         add_proxy(args, debug)
@@ -243,18 +252,18 @@ $ vprox -r
         show_proxy(debug)
     elif clear:
         clear_proxy()
-    elif erase:
-        erase_proxy(erase, debug)
+    elif remove:
+        remove_proxy(remove, debug)
     elif set_git:
         set_git_proxy(set_git, debug)
     elif reset_git:
         reset_git_proxy()
-    elif shell:
-        print_shell_proxy_hint(shell, debug)
-    elif powershell:
-        print_powershell_proxy_hint(powershell, debug)
+    elif bash:
+        print_bash_proxy_hint(bash, debug)
+    elif pwsh:
+        print_pwsh_proxy_hint(pwsh, debug)
     elif cmd:
-        print_cmd_proxy(cmd, debug)
+        print_cmd_proxy_hint(cmd, debug)
     else:
         cmsg.unknown_option()
 
