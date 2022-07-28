@@ -1,0 +1,76 @@
+#!/usr/bin/env python3
+# -*- coding:utf-8 -*-
+# Copyright 2018-  <linrongbin16@gmail.com>
+
+import sys
+import os
+import click
+
+sys.path.append(".")
+import common.msg as cmsg
+import common.fs as cfs
+
+
+def get_basename(target, debug):
+    basename = None
+    if target.endswith(".tar.gz"):
+        basename = target[:-7]
+    elif target.endswith(".tar.bz2"):
+        basename = target[:-8]
+    elif target.endswith(".tgz") or target.endswith(".tar") or target.endswith(
+            ".zip"):
+        basename = target[:-4]
+    elif target.endswith(".7z"):
+        basename = target[:-3]
+    if debug:
+        cmsg.debug(f"target:{target} base name:{basename}")
+    return basename
+
+
+def extract(targets, debug):
+    if debug:
+        cmsg.debug(f"extract targets: {targets}")
+    for src in targets:
+        if debug:
+            cmsg.debug(f"extract target: {src}")
+        if src.endswith(".tar.gz") or src.endswith(".tar.bz2") or src.endswith(
+                ".tar") or src.endswith(".tgz"):
+            cfs.backup(get_basename(src, debug))
+            os.system(f'tar xf "{src}"')
+        elif src.endswith(".zip") or src.endswith(".7z"):
+            cfs.backup(get_basename(src, debug))
+            os.system(f'7z x "{src}"')
+        else:
+            cmsg.error(f"failed to extract file '{src}', skip...")
+        cmsg.echo(f"extracted {src} - done")
+
+
+@click.command()
+@click.option("--debug", is_flag=True, help="debug mode")
+@click.argument("args", nargs=-1)
+def vunzip(debug, args):
+    """
+Extract multiple compressed files.
+
+Example:
+
+\b
+```
+$ vunzip --tar-gz common
+[vcmd] extracted common.tar.gz - done
+$ vunzip --tar-gz common
+[vcmd] 'common.tar.gz' already exist, move it to common.tar.gz.2022_07_28_17_09_27 [y(es) - move, n(o) - overwrite]?y
+[vcmd] Backup from common.tar.gz to common.tar.gz.2022_07_28_17_09_27
+[vcmd] extracted common.tar.gz - done
+```
+"""
+    if debug:
+        cmsg.debug(f"debug:{debug}, args:{args}")
+    if len(args) == 0:
+        cmsg.error("input file/directory missing")
+        exit(1)
+    extract(args, debug)
+
+
+if __name__ == "__main__":
+    vunzip()
